@@ -25,56 +25,53 @@ classDiagram
     class Shape {
         <<Abstract>>
 
-        + Shape setFillColor(Color|String|int color)
-        + FilShapeledShape setFillColor(Color|String|int color, double alpha)
-
-        + FilShapeledShape setBorderColor(Color|String|int color)
-        + FilShapeledShape setBorderColor(Color|String|int color, double alpha)
-
         + Color getFillColor()
         + int getFillColorAsInt()
-
         + Color getBorderColor()
         + int getBorderColorAsInt()
-        + Shape setBorderWidth(double width)
         + double getBorderWidth()
-        + Shape setAlpha(double alpha)
         + double getAlpha()
-        + Shape setVisible(boolean visible)
         + boolean isVisible()
-        + Shape setStatic(boolean isStatic)
         + boolean isStatic()
-        + Shape bringToFront()
-        + Shape sendToBack()
         + double getCenterX()
         + double getCenterY()
-        + Shape move(double dx, double dy)
-        + Shape moveTo(double x, double y)
+        + double getAngle()
+        + Shape getFirstCollidingShape()
+        + List<Shape> getCollidingShapes(Group<? extends Shape> group)
+        + World getWorld()
+
+        + Shape setFillColor(Color|String|int color)
+        + Shape setFillColor(Color|String|int color, double alpha)
+        + Shape setBorderColor(Color|String|int color)
+        + Shape setBorderColor(Color|String|int color, double alpha)
+        + Shape setBorderWidth(double width)
+        + Shape setAlpha(double alpha)
+        + Shape setVisible(boolean visible)
+        + Shape setStatic(boolean isStatic)
         + Shape setX(double x)
         + Shape setY(double y)
+        + Shape setScale(double newScale)
+        + Shape setAngle(double newAngle)
+        + Shape tint(Color|String|int color)
+
+        + Shape bringToFront()
+        + Shape sendToBack()
+        + Shape move(double dx, double dy)
+        + Shape moveTo(double x, double y)
         + Shape rotate(double angleDeg)
         + Shape rotate(double angleDeg, double pivotX, double pivotY)
         + Shape scale(double factor)
-        + Shape setScale(double newScale)
         + Shape scale(double factor, double pivotX, double pivotY)
         + Shape mirrorX()
         + Shape mirrorY()
         %% + Shape defineDirection(double angleDeg)
         + Shape forward(double distance)
-        + double getAngle()
-        + Shape setAngle(double newAngle)
         + boolean containsPoint(double x, double y)
         + boolean isOutsideView()
-        + Shape tint(int color)
-        + Shape tint(String color)
-        + Shape tint(Color color)
         + Direction directionRelativeTo(Shape other)
         + Shape moveBackFrom(Shape other, boolean keepColliding)
         + boolean collidesWith(Shape other)
         + boolean collidesWithAnyShape()
-        + Shape getFirstCollidingShape()
-        + List<Shape> getCollidingShapes(Group<? extends Shape> group)
-        + World getWorld()
         + void destroy()
         %% + Shape defineCenter(double x, double y)
         %% + Shape defineCenterRelative(double relX, double relY)
@@ -87,21 +84,22 @@ classDiagram
     class Group {
         + Group()
         + Group(Shape... shapes)
-        + void add(Shape shape)
-        + void add(Shape... shapes)
-        + void remove(Shape shape)
-        + void remove(int index)
+
         + T get(int index)
         + int indexOf(Shape shape)
         + int size()
+        + List<Shape> getChildren()
+        + List<Shape> getCollidingShapes(Shape other)
+
+        + Shape move(double dx, double dy)
+        + void add(Shape... shapes)
+        + void remove(Shape shape)
+        + void remove(int index)
         + void empty()
         + void destroyAllChildren()
         %% + Group<T> copy()
-        + Shape move(double dx, double dy)
         + boolean containsPoint(double x, double y)
         + boolean collidesWith(Shape other)
-        + List<Shape> getCollidingShapes(Shape other)
-        + List<Shape> getChildren()
         %% # Bounds getBounds()
         %%void bringChildToFront(Shape child)
         %%void sendChildToBack(Shape child)
@@ -118,45 +116,52 @@ classDiagram
         %%void deregisterShape(Shape shape) 
         %%void bringToFront(Shape shape) 
         %%void sendToBack(Shape shape)
+
         + double getWidth()
         + double getHeight()
         + double getTop()
         + double getLeft()
         + Group<? extends Shape> getDefaultGroup()
-        + void setDefaultGroup(Group<? extends Shape> defaultGroup)
-        + void setBackgroundColor(Color color)
-        + void setBackgroundColor(int color)
-        + void setBackgroundColor(String color)
         + Color getBackgroundColor()
+        + List<Shape> getAllShapes()
+        %% - void collectShapes(Shape shape, List<Shape> target)
+        + List<Shape> getRootShapes()
+
+        + void setDefaultGroup(Group<? extends Shape> defaultGroup)
+        + void setBackgroundColor(Color|String|int color)
+        + void setCoordinateSystem(double left, double top, double width, double height)
+        + void setCursor(String cursor)
+
         + void move(double dx, double dy)
         + void rotate(double angleInDeg, double centerX, double centerY)
         + void scale(double factor, double centerX, double centerY)
         + void flipY()
-        + void setCoordinateSystem(double left, double top, double width, double height)
-        + void setCursor(String cursor)
         + void follow(Shape shape, double margin, double xMin, double xMax, double yMin, double yMax)
         + void addMouseListener(Object mouseListener)
-        + List<Shape> getAllShapes()
-        %% - void collectShapes(Shape shape, List<Shape> target)
-        + List<Shape> getRootShapes()
     }
     class Circle {
         + Circle()
         + Circle(double x, double y, double r)
-        + Circle setRadius(double radius)
+
         + double getRadius()
+
+        + Circle setRadius(double radius)
+
         %% + Circle copy()
         + boolean containsPoint(double x, double y)
         %% # Bounds getBounds()
         %% + String toString()
-}
+    }
     class Rectangle {
         + Rectangle()
         + Rectangle(double left, double top, double width, double height)
-        + Rectangle setWidth(double width)
-        + Rectangle setHeight(double height)
+
         + double getWidth()
         + double getHeight()
+
+        + Rectangle setWidth(double width)
+        + Rectangle setHeight(double height)
+
         + Rectangle moveTo(double x, double y)
         %% + Rectangle copy()
         %% # java.util.List<Point> getLocalPoints()
@@ -168,7 +173,9 @@ classDiagram
     class Triangle {
         + Triangle()
         + Triangle(double x1, double y1, double x2, double y2, double x3, double y3)
+
         + Triangle setPoints(double x1, double y1, double x2, double y2, double x3, double y3)
+
         %% + Triangle copy()
         %% # java.util.List<Point> getLocalPoints()
         + boolean containsPoint(double x, double y)
@@ -180,8 +187,10 @@ classDiagram
         + Polygon(boolean closeAndFill)
         + Polygon(boolean closeAndFill, double... coordinates)
         + Polygon(Shape shape)
-        + void addPoint(double x, double y)
+
         + void setPoints(double[] points)
+
+        + void addPoint(double x, double y)
         + void addPoints(double[] points)
         + void insertPoint(double x, double y, int index)
         + void open()
@@ -198,7 +207,9 @@ classDiagram
     class Line {
         + Line()
         + Line(double x1, double y1, double x2, double y2)
+
         + Line setPoints(double x1, double y1, double x2, double y2)
+
         %% + Line copy()
         %% # java.util.List<Point> getLocalPoints()
         + boolean containsPoint(double x, double y)
@@ -213,7 +224,6 @@ classDiagram
         
         + FilledShape setFillColor(Color|String|int color)
         + FilledShape setFillColor(Color|String|int color, double alpha)
-
         + FilledShape setBorderColor(Color|String|int color)
         + FilledShape setBorderColor(Color|String|int color, double alpha)
 
@@ -222,18 +232,19 @@ classDiagram
     }
     class Text {
         + Text()
-        + Text(double x, double y, double fontSize, String text)
-        + Text(double x, double y, double fontSize, String text, String fontFamily)
-        + Text(double x, double y, double fontSize, double text)
-        + Text(double x, double y, double fontSize, double text, String fontFamily)
-        + void setFontsize(double fontsize)
+        + Text(double x, double y, double fontSize, String|double text)
+        + Text(double x, double y, double fontSize, String|double text, String fontFamily)
+
         + double getFontsize()
-        + void setText(String|double text)
         + String getText()
-        + void setAlignment(Alignment alignment)
-        + void setStyle(boolean bold, boolean italic)
         + double getWidth()
         + double getHeight()
+
+        + void setFontsize(double fontsize)
+        + void setText(String|double text)
+        + void setAlignment(Alignment alignment)
+        + void setStyle(boolean bold, boolean italic)
+
         + Text moveTo(double x, double y)
         %% + Text copy()
         %% # Bounds getBounds()
@@ -243,14 +254,17 @@ classDiagram
     class Arc {
         + Arc()
         + Arc(double mx, double my, double innerRadius, double outerRadius, double startAngle, double endAngle)
-        + void setInnerRadius(double innerRadius)
-        + void setOuterRadius(double outerRadius)
-        + void setStartAngle(double startAngle)
-        + void setEndAngle(double endAngle)
+
         + double getInnerRadiusX()
         + double getOuterRadiusX()
         + double getStartAngleX()
         + double getEndAngleX()
+
+        + void setInnerRadius(double innerRadius)
+        + void setOuterRadius(double outerRadius)
+        + void setStartAngle(double startAngle)
+        + void setEndAngle(double endAngle)
+
         + boolean containsPoint(double x, double y)
         %% # Bounds getBounds()
         %% + Arc copy()
@@ -259,10 +273,13 @@ classDiagram
     class Ellipse {
         + Ellipse()
         + Ellipse(double x, double y, double rX, double rY)
-        + Ellipse setRadiusX(double radiusX)
-        + Ellipse setRadiusY(double radiusY)
+
         + double getRadiusX()
         + double getRadiusY()
+
+        + Ellipse setRadiusX(double radiusX)
+        + Ellipse setRadiusY(double radiusY)
+
         %% + Ellipse copy()
         %% # Bounds getBounds()
         %% # java.util.List<Point> getLocalPoints()
@@ -271,13 +288,16 @@ classDiagram
     class Sector {
         + Sector()
         + Sector(double mx, double my, double radius, double startAngle, double endAngle)
-        + void setRadius(double radius)
+
         + double getRadiusX()
-        + void setStartAngle(double startAngle)
         + double getStartAngleX()
-        + void setEndAngle(double endAngle)
         + double getEndAngleX()
+
+        + void setRadius(double radius)
+        + void setStartAngle(double startAngle)
+        + void setEndAngle(double endAngle)
         + void drawRadii(boolean drawRadii)
+
         + boolean containsPoint(double x, double y)
         %% # Bounds getBounds()
         %% + Sector copy()
@@ -287,12 +307,15 @@ classDiagram
     class RoundedRectangle {
         + RoundedRectangle()
         + RoundedRectangle(double left, double top, double width, double height, double radius)
-        + RoundedRectangle setWidth(double width)
-        + RoundedRectangle setHeight(double height)
-        + RoundedRectangle setRadius(double radius)
+
         + double getWidth()
         + double getHeight()
         + double getRadius()
+
+        + RoundedRectangle setWidth(double width)
+        + RoundedRectangle setHeight(double height)
+        + RoundedRectangle setRadius(double radius)
+
         + RoundedRectangle moveTo(double x, double y)
         %% + RoundedRectangle copy()
         %% # java.util.List<Point> getLocalPoints()
