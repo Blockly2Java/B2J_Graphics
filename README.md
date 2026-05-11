@@ -86,15 +86,16 @@ classDiagram
     Shape <|-- Circle
     Shape <|-- Rectangle
     Shape <|-- Triangle
-    Shape <|-- Polygon
     Shape <|-- Line
     Shape <|-- Text
-    Shape <|-- Arc
     Shape <|-- Ellipse
-    Shape <|-- Sector
     Shape <|-- RoundedRectangle
     Shape <|-- TileImage
     Shape <|-- Bitmap
+
+    FilledShape <|-- Sector
+    FilledShape <|-- Polygon
+    FilledShape <|-- Arc
 
     Group <|-- Shape
     Group "1" *-- "many" Shape : contains
