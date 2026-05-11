@@ -22,7 +22,8 @@ Add the following dependency to you `pom.xml`
 
 ```mermaid
 classDiagram
-    classStyle default hideEmptyMembers:true
+    %% Hide private and protected members
+    hide emptyMembers
 
     %% Base Classes
     class Shape {
@@ -65,7 +66,7 @@ classDiagram
         +boolean isOutsideView()
         +Shape tint(int color)
         +Shape tint(String color)
-        +Shape tint(Color color)
+        +Shape tint(Color color)Shape: Abstract base class for all graphical shapes with common properties an
         +Direction directionRelativeTo(Shape other)
         +Shape moveBackFrom(Shape other, boolean keepColliding)
         +boolean collidesWith(Shape other)
