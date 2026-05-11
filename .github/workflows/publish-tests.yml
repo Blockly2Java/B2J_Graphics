@@ -54,7 +54,7 @@ jobs:
         with:
           java-version: '17' # Change to your Java version
           distribution: 'temurin'
-          server-id: ossrh
+          server-id: central
           server-username: ${{ secrets.OSSRH_USER }}
           server-password: ${{ secrets.OSSRH_TOKEN }}
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
