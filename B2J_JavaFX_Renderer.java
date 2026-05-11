@@ -1,12 +1,9 @@
-import javafx.application.Platform;
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.scene.shape.*;
-import javafx.scene.text.Text;
-import javafx.stage.Stage;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import javafx.application.Platform;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 /**
  * Handles JavaFX rendering for B2J graphics.
@@ -22,12 +19,12 @@ public class B2J_JavaFX_Renderer {
     private static class JavaFXWindow {
         Stage stage;
         Scene scene;
-        Group root;
+        javafx.scene.Group root;
         
         JavaFXWindow(String title, double width, double height) {
             stage = new Stage();
             stage.setTitle(title);
-            root = new Group();
+            root = new javafx.scene.Group();
             scene = new Scene(root, width, height);
             stage.setScene(scene);
             stage.show();
@@ -110,34 +107,34 @@ public class B2J_JavaFX_Renderer {
      * Create a JavaFX node for a given B2J shape
      */
     private static javafx.scene.Node createNodeForShape(Shape shape) {
-        if (shape instanceof Circle) {
-            return createNodeForCircle((Circle) shape);
-        } else if (shape instanceof Rectangle) {
-            return createNodeForRectangle((Rectangle) shape);
-        } else if (shape instanceof Line) {
-            return createNodeForLine((Line) shape);
-        } else if (shape instanceof Polygon) {
-            return createNodeForPolygon((Polygon) shape);
-        } else if (shape instanceof Triangle) {
-            return createNodeForTriangle((Triangle) shape);
-        } else if (shape instanceof Ellipse) {
-            return createNodeForEllipse((Ellipse) shape);
-        } else if (shape instanceof Arc) {
-            return createNodeForArc((Arc) shape);
-        } else if (shape instanceof RoundedRectangle) {
-            return createNodeForRoundedRectangle((RoundedRectangle) shape);
-        } else if (shape instanceof Sector) {
-            return createNodeForSector((Sector) shape);
-        } else if (shape instanceof Text) {
-            return createNodeForText((Text) shape);
-        } else if (shape instanceof FilledShape) {
-            return createNodeForFilledShape((FilledShape) shape);
+        if (shape instanceof Circle s) {
+            return createNodeForCircle(s);
+        } else if (shape instanceof Rectangle s) {
+            return createNodeForRectangle(s);
+        } else if (shape instanceof Line s) {
+            return createNodeForLine(s);
+        } else if (shape instanceof Polygon s) {
+            return createNodeForPolygon(s);
+        } else if (shape instanceof Triangle s) {
+            return createNodeForTriangle(s);
+        } else if (shape instanceof Ellipse s) {
+            return createNodeForEllipse(s);
+        } else if (shape instanceof Arc s) {
+            return createNodeForArc(s);
+        } else if (shape instanceof RoundedRectangle s) {
+            return createNodeForRoundedRectangle(s);
+        } else if (shape instanceof Sector s) {
+            return createNodeForSector(s);
+        } else if (shape instanceof Text s) {
+            return createNodeForText(s);
+        } else if (shape instanceof FilledShape s) {
+            return createNodeForFilledShape(s);
         }
         return null;
     }
     
-    private static Circle createNodeForCircle(Circle shape) {
-        Circle circle = new Circle();
+    private static javafx.scene.shape.Circle createNodeForCircle(Circle shape) {
+        javafx.scene.shape.Circle circle = new javafx.scene.shape.Circle();
         circle.setCenterX(shape.getCenterX());
         circle.setCenterY(shape.getCenterY());
         circle.setRadius(shape.getRadius());
@@ -145,9 +142,9 @@ public class B2J_JavaFX_Renderer {
         return circle;
     }
     
-    private static Rectangle createNodeForRectangle(Rectangle shape) {
-        Rectangle rect = new Rectangle();
-        Bounds bounds = shape.getBounds();
+    private static javafx.scene.shape.Rectangle createNodeForRectangle(Rectangle shape) {
+        javafx.scene.shape.Rectangle rect = new javafx.scene.shape.Rectangle();
+        Shape.Bounds bounds = shape.getBounds();
         rect.setX(bounds.minX);
         rect.setY(bounds.minY);
         rect.setWidth(bounds.maxX - bounds.minX);
@@ -156,9 +153,9 @@ public class B2J_JavaFX_Renderer {
         return rect;
     }
     
-    private static Line createNodeForLine(Line shape) {
-        Bounds bounds = shape.getBounds();
-        Line line = new Line();
+    private static javafx.scene.shape.Line createNodeForLine(Line shape) {
+        Shape.Bounds bounds = shape.getBounds();
+        javafx.scene.shape.Line line = new javafx.scene.shape.Line();
         line.setStartX(bounds.minX);
         line.setStartY(bounds.minY);
         line.setEndX(bounds.maxX);
@@ -167,8 +164,8 @@ public class B2J_JavaFX_Renderer {
         return line;
     }
     
-    private static Polygon createNodeForPolygon(Polygon shape) {
-        Polygon polygon = new Polygon();
+    private static javafx.scene.shape.Polygon createNodeForPolygon(Polygon shape) {
+        javafx.scene.shape.Polygon polygon = new javafx.scene.shape.Polygon();
         for (Shape.Point point : shape.getTransformedPoints()) {
             polygon.getPoints().addAll(point.x, point.y);
         }
@@ -176,12 +173,13 @@ public class B2J_JavaFX_Renderer {
         return polygon;
     }
     
-    private static Triangle createNodeForTriangle(Triangle shape) {
-        return createNodeForPolygon(shape);
+    private static javafx.scene.shape.Polygon createNodeForTriangle(Triangle shape) {
+        Polygon p = new Polygon(shape);
+        return createNodeForPolygon(p);
     }
     
-    private static Ellipse createNodeForEllipse(Ellipse shape) {
-        Ellipse ellipse = new Ellipse();
+    private static javafx.scene.shape.Ellipse createNodeForEllipse(Ellipse shape) {
+        javafx.scene.shape.Ellipse ellipse = new javafx.scene.shape.Ellipse();
         ellipse.setCenterX(shape.getCenterX());
         ellipse.setCenterY(shape.getCenterY());
         ellipse.setRadiusX(shape.getRadiusX());
@@ -190,46 +188,49 @@ public class B2J_JavaFX_Renderer {
         return ellipse;
     }
     
-    private static Arc createNodeForArc(Arc shape) {
-        Arc arc = new Arc();
+    private static javafx.scene.shape.Arc createNodeForArc(Arc shape) {
+        javafx.scene.shape.Arc arc = new javafx.scene.shape.Arc();
         arc.setCenterX(shape.getCenterX());
         arc.setCenterY(shape.getCenterY());
-        arc.setRadiusX(shape.getRadiusX());
-        arc.setRadiusY(shape.getRadiusY());
-        arc.setStartAngle(shape.getStartAngle());
+        arc.setRadiusX(shape.getOuterRadiusX());
+        arc.setRadiusY(shape.getOuterRadiusY());
+        arc.setStartAngle(shape.getStartAngleX());
         arc.setLength(shape.getLength());
         applyCommonProperties(arc, shape);
         return arc;
     }
     
-    private static RoundedRectangle createNodeForRoundedRectangle(RoundedRectangle shape) {
-        Bounds bounds = shape.getBounds();
-        RoundedRectangle rect = new RoundedRectangle();
+    private static javafx.scene.shape.Rectangle createNodeForRoundedRectangle(RoundedRectangle shape) {
+        javafx.scene.shape.Rectangle rect = new javafx.scene.shape.Rectangle();
+        Shape.Bounds bounds = shape.getBounds();
         rect.setX(bounds.minX);
         rect.setY(bounds.minY);
         rect.setWidth(bounds.maxX - bounds.minX);
         rect.setHeight(bounds.maxY - bounds.minY);
-        rect.setArcWidth(shape.getArcWidth());
-        rect.setArcHeight(shape.getArcHeight());
         applyCommonProperties(rect, shape);
         return rect;
     }
     
-    private static Sector createNodeForSector(Sector shape) {
-        return createNodeForArc(shape);
+    private static javafx.scene.shape.Arc createNodeForSector(Sector shape) {
+        double mx = shape.getCenterX();
+        double my = shape.getCenterY();
+        double r = shape.getRadius();
+        double sAngl = shape.getStartAngle();
+        double eAngl = shape.getEndAngle();
+        Arc a = new Arc(mx, my, 0, r, sAngl, eAngl);
+        return createNodeForArc(a);
     }
     
-    private static Text createNodeForText(Text shape) {
-        Text text = new Text();
-        text.setX(shape.getX());
-        text.setY(shape.getY());
+    private static javafx.scene.text.Text createNodeForText(Text shape) {
+        javafx.scene.text.Text text = new javafx.scene.text.Text();
+        text.setX(shape.getCenterX());
+        text.setY(shape.getCenterY());
         text.setText(shape.getText());
-        text.setFont(shape.getFont());
         return text;
     }
     
-    private static Shape createNodeForFilledShape(FilledShape shape) {
-        return createNodeForPolygon(shape);
+    private static javafx.scene.shape.Polygon createNodeForFilledShape(FilledShape shape) {
+        return createNodeForPolygon(new Polygon(shape));
     }
     
     /**
@@ -237,14 +238,14 @@ public class B2J_JavaFX_Renderer {
      */
     private static <T extends javafx.scene.shape.Shape> void applyCommonProperties(T node, Shape shape) {
         if (shape.getFillColor() != null) {
-            javafx.scene.paint.Color fxColor = toJavaFXColor(shape.getFillColor(), shape.getFillAlpha());
+            javafx.scene.paint.Color fxColor = toJavaFXColor(shape.getFillColor(), shape.getAlpha());
             node.setFill(fxColor);
         } else {
             node.setFill(null);
         }
         
         if (shape.getBorderColor() != null && shape.getBorderWidth() > 0) {
-            javafx.scene.paint.Color fxColor = toJavaFXColor(shape.getBorderColor(), shape.getBorderAlpha());
+            javafx.scene.paint.Color fxColor = toJavaFXColor(shape.getBorderColor(), shape.getAlpha());
             node.setStroke(fxColor);
             node.setStrokeWidth(shape.getBorderWidth());
         } else {
@@ -270,7 +271,7 @@ public class B2J_JavaFX_Renderer {
     /**
      * Get the JavaFX root group for a world
      */
-    public static Group getRootGroup(World world) {
+    public static javafx.scene.Group getRootGroup(World world) {
         JavaFXWindow window = worldWindows.get(world);
         return window != null ? window.root : null;
     }

@@ -38,6 +38,23 @@ public class Arc extends FilledShape {
     public double getOuterRadiusX() {
         return outerRadius * scaleFactor;
     }
+    public double getOuterRadiusY() {
+        return outerRadius * scaleFactor;
+    }
+
+    public double getLength() {
+        double angleDeg = endAngleDeg - startAngleDeg;
+        // Normalize angle to be positive
+        while (angleDeg < 0) {
+            angleDeg += 360;
+        }
+        while (angleDeg >= 360) {
+            angleDeg -= 360;
+        }
+        // Use the average of inner and outer radii for arc length
+        double averageRadius = (innerRadius + outerRadius) / 2.0;
+        return averageRadius * scaleFactor * angleDeg * Math.PI / 180.0;
+    }
 
     public void setStartAngle(double startAngle) {
         this.startAngleDeg = startAngle;

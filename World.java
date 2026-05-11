@@ -48,7 +48,16 @@ public class World {
             rootGroup = new javafx.scene.Group();
             javafx.scene.Scene scene = new javafx.scene.Scene(rootGroup, currentWidth, currentHeight);
             
+            // Set the scene background color to match the world background color
+            scene.setFill(new javafx.scene.paint.Color(backgroundColor.red, backgroundColor.green, backgroundColor.blue, backgroundColor.alpha));
+            
             stage.setScene(scene);
+            stage.setWidth(currentWidth);
+            stage.setHeight(currentHeight);
+            stage.setMinWidth(currentWidth);
+            stage.setMinHeight(currentHeight);
+            stage.setMaxWidth(currentWidth);
+            stage.setMaxHeight(currentHeight);
             stage.show();
         });
     }

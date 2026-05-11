@@ -23,7 +23,7 @@ public class Sector extends FilledShape {
         this.radius = radius / scaleFactor;
     }
 
-    public double getRadiusX() {
+    public double getRadius() {
         return radius * scaleFactor;
     }
 
@@ -31,7 +31,7 @@ public class Sector extends FilledShape {
         this.startAngleDeg = startAngle;
     }
 
-    public double getStartAngleX() {
+    public double getStartAngle() {
         return startAngleDeg;
     }
 
@@ -39,7 +39,7 @@ public class Sector extends FilledShape {
         this.endAngleDeg = endAngle;
     }
 
-    public double getEndAngleX() {
+    public double getEndAngle() {
         return endAngleDeg;
     }
 
@@ -77,7 +77,7 @@ public class Sector extends FilledShape {
     @Override
     public String toString() {
         return "{startAngle: " + startAngleDeg + ", endAngle: " + endAngleDeg + ", radius: "
-            + getRadiusX() + ", centerX: " + getCenterX() + ", centerY: " + getCenterY() + "}";
+            + getRadius() + ", centerX: " + getCenterX() + ", centerY: " + getCenterY() + "}";
     }
 
     private boolean angleWithin(double angle, double start, double end) {
