@@ -59,10 +59,8 @@ jobs:
           java-version: '17' # Adjust to your Java version if needed
           distribution: 'temurin'
           server-id: central 
-          server-username: CENTRAL_USERNAME 
-          server-password: CENTRAL_PASSWORD 
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-          gpg-passphrase: GPG_PASSPHRASE
+          gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
 
           # --- DIAGNOSTIC STEP ---
       - name: Verify Secrets are Loaded
@@ -88,7 +86,24 @@ jobs:
       - name: Publish package
         env:
           # Mapping your specific GitHub Secrets to the variables Maven expects
-          CENTRAL_USERNAME: ${{ secrets.OSSRH_USER }} 
-          CENTRAL_PASSWORD: ${{ secrets.OSSRH_TOKEN }} 
+          OSSRH_USER: ${{ secrets.OSSRH_USER }} 
+          OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }} 
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-        run: mvn clean deploy -B -DskipTests -Dgpg.passphrase="$GPG_PASSPHRASE"
+        run: |
+          # 1. Forcefully create the exact settings.xml Maven needs
+          # This guarantees GitHub Actions isn't losing your credentials in translation
+          mkdir -p ~/.m2
+          cat <<EOF > ~/.m2/settings.xml
+          <settings>
+            <servers>
+              <server>
+                <id>central</id>
+                <username>${OSSRH_USER}</username>
+                <password>${OSSRH_TOKEN}</password>
+              </server>
+            </servers>
+          </settings>
+          EOF
+          
+          # 2. Run the deploy command, passing the GPG passphrase directly
+          mvn clean deploy -B -DskipTests -Dgpg.passphrase="${GPG_PASSPHRASE}"
