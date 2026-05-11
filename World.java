@@ -3,7 +3,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class World {
-    private static World currentWorld;
+        private static World currentWorld;
 
     private double currentLeft;
     private double currentTop;
@@ -19,6 +19,9 @@ public class World {
     private final List<Shape> rootShapes = new ArrayList<>();
 
     private Group<? extends Shape> defaultGroup;
+    
+    private javafx.stage.Stage stage;
+    private javafx.scene.Group rootGroup;
 
     public World() {
         this(800, 600);
@@ -30,6 +33,75 @@ public class World {
         this.currentWidth = width;
         this.currentHeight = height;
         currentWorld = this;
+        // Create JavaFX window for this world
+        createJavaFXWindow();
+    }
+    
+    /**
+     * Create a JavaFX window for this world
+     */
+    private void createJavaFXWindow() {
+        javafx.application.Platform.runLater(() -> {
+            stage = new javafx.stage.Stage();
+            stage.setTitle("World");
+            
+            rootGroup = new javafx.scene.Group();
+            javafx.scene.Scene scene = new javafx.scene.Scene(rootGroup, currentWidth, currentHeight);
+            
+            stage.setScene(scene);
+            stage.show();
+        });
+    }
+    
+    /**
+     * Set the title of the JavaFX window
+     */
+    public void setWindowTitle(String title) {
+        javafx.application.Platform.runLater(() -> {
+            if (stage != null) {
+                stage.setTitle(title);
+            }
+        });
+    }
+    
+    /**
+     * Get the JavaFX root group for adding shapes directly
+     */
+    public javafx.scene.Group getJavaFXRootGroup() {
+        return rootGroup;
+    }
+    
+    /**
+     * Get the JavaFX stage
+     */
+    public javafx.stage.Stage getJavaFXStage() {
+        return stage;
+    }
+    
+    
+    void registerShape(Shape shape) {
+        if (shape == null) {
+            return;
+        }
+        if (!allShapes.contains(shape)) {
+            allShapes.add(shape);
+        }
+        if (shape.belongsToGroup == null && !rootShapes.contains(shape)) {
+            rootShapes.add(shape);
+        }
+        // Add shape to JavaFX rendering
+        B2J_JavaFX_Renderer.addShape(shape);
+    }
+
+    void unregisterFromDefaultList(Shape shape) {
+        rootShapes.remove(shape);
+    }
+
+    void deregisterShape(Shape shape) {
+        rootShapes.remove(shape);
+        allShapes.remove(shape);
+        // Remove shape from JavaFX rendering
+        B2J_JavaFX_Renderer.removeShape(shape);
     }
 
     public static World getWorld() {
@@ -51,26 +123,6 @@ public class World {
         currentWorld.allShapes.clear();
     }
 
-    void registerShape(Shape shape) {
-        if (shape == null) {
-            return;
-        }
-        if (!allShapes.contains(shape)) {
-            allShapes.add(shape);
-        }
-        if (shape.belongsToGroup == null && !rootShapes.contains(shape)) {
-            rootShapes.add(shape);
-        }
-    }
-
-    void unregisterFromDefaultList(Shape shape) {
-        rootShapes.remove(shape);
-    }
-
-    void deregisterShape(Shape shape) {
-        rootShapes.remove(shape);
-        allShapes.remove(shape);
-    }
 
     void bringToFront(Shape shape) {
         if (shape == null) {
