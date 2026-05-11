@@ -29,75 +29,244 @@ classDiagram
         <<Abstract>>
         +Shape()
         +Shape(double, double)
-        +copy()
-        +setFillColor(Color|int|String)
-        +setBorderColor(Color|int|String)
-        +setBorderWidth(double)
-        +setAlpha(double)
-        +setVisible(boolean)
-        +setStatic(boolean)
-        +move(double, double)
-        +moveTo(double, double)
-        +setX(double)
-        +setY(double)
-        +rotate(double)
-        +scale(double)
-        +mirrorX()
-        +mirrorY()
-        +forward(double)
-        +getAngle()
-        +containsPoint(double, double)
-        +tint(Color|int|String)
-        +collidesWith(Shape)
-        +destroy()
-        +getWorld()
+        +copy() Shape
+        +setFillColor(Color|int|String) Shape
+        +setBorderWidth(double) Shape
+        +setAlpha(double) Shape
+        +setVisible(boolean) Shape
+        +setStatic(boolean) Shape
+        +move(double, double) Shape
+        +moveTo(double, double) Shape
+        +setX(double) Shape
+        +setY(double) Shape
+        +rotate(double) Shape
+        +scale(double) Shape
+        +mirrorX() Shape
+        +mirrorY() Shape
+        +forward(double) Shape
+        +getAngle() double
+        +containsPoint(double, double) boolean
+        +tint(Color|int|String) Shape
+        +collidesWith(Shape) boolean
+        +destroy() void
+        +getWorld() World
+        +bringToFront() Shape
+        +sendToBack() Shape
+        +getCenterX() double
+        +getCenterY() double
+        +setAngle(double) Shape
+        +isOutsideView() boolean
+        +collidesWithAnyShape() boolean
+        +getFirstCollidingShape() Shape
+        +getCollidingShapes(Group) List~Shape~
+        +directionRelativeTo(Shape) Direction
+        +moveBackFrom(Shape, boolean) Shape
+        +defineCenter(double, double) Shape
+        +defineCenterRelative(double, double) Shape
+        +setDefaultVisibility(boolean) void
+        +isStatic() boolean
+        +isVisible() boolean
+        +getFillColor() Color
+        +getFillColorAsInt() int
+        +getBorderColor() Color
+        +getBorderColorAsInt() int
+        +getBorderWidth() double
+        +getAlpha() double
     }
 
     class FilledShape {
         <<Abstract>>
-        +setDefaultBorder(double, String)
-        +setDefaultFillColor(String)
+        +setDefaultBorder(double, String) void
+        +setDefaultBorder(double, int, double) void
+        +setDefaultFillColor(String) void
+        +setDefaultFillColor(int, double) void
+        +setDefaultFillColor(int) void
     }
 
     class Group {
         +Group()
         +Group(Shape...)
-        +add(Shape...)
-        +remove(Shape)
-        +get(int)
-        +size()
-        +getChildren()
+        +add(Shape) void
+        +add(Shape...) void
+        +remove(Shape) void
+        +remove(int) void
+        +get(int) T
+        +indexOf(Shape) int
+        +size() int
+        +empty() void
+        +destroyAllChildren() void
+        +getChildren() List~Shape~
+        +getCollidingShapes(Shape) List~Shape~
     }
 
     class World {
         +World()
         +World(double, double)
-        +static World getWorld()
-        +static void clear()
-        +getWidth()
-        +getHeight()
-        +getBackgroundColor()
-        +setBackgroundColor(Color|int|String)
-        +move(double, double)
-        +follow(Shape, double)
-        +getAllShapes()
+        +static World getWorld() World
+        +static void clear() void
+        +getWidth() double
+        +getHeight() double
+        +getTop() double
+        +getLeft() double
+        +getDefaultGroup() Group~Shape~
+        +setDefaultGroup(Group~Shape~) void
+        +setBackgroundColor(Color|int|String) void
+        +getBackgroundColor() Color
+        +move(double, double) void
+        +rotate(double, double, double) void
+        +scale(double, double, double) void
+        +flipY() void
+        +setCoordinateSystem(double, double, double, double) void
+        +setCursor(String) void
+        +follow(Shape, double, double, double, double, double) void
+        +addMouseListener(Object) void
+        +getAllShapes() List~Shape~
+        +getRootShapes() List~Shape~
+    }
+
+    class Circle {
+        +Circle()
+        +Circle(double, double, double)
+        +setRadius(double) Circle
+        +getRadius() double
+        +copy() Circle
+    }
+
+    class Rectangle {
+        +Rectangle()
+        +Rectangle(double, double, double, double)
+        +setWidth(double) Rectangle
+        +setHeight(double) Rectangle
+        +getWidth() double
+        +getHeight() double
+        +moveTo(double, double) Rectangle
+        +copy() Rectangle
+    }
+
+    class Triangle {
+        +Triangle()
+        +Triangle(double, double, double, double, double, double)
+        +setPoints(double, double, double, double, double, double) Triangle
+        +copy() Triangle
+    }
+
+    class Polygon {
+        +Polygon()
+        +Polygon(boolean)
+        +Polygon(boolean, double...)
+        +Polygon(Shape)
+        +addPoint(double, double) void
+        +setPoints(double[]) void
+        +addPoints(double[]) void
+        +insertPoint(double, double, int) void
+        +movePointTo(double, double, int) void
+        +open() void
+        +close() void
+        +copy() Polygon
+    }
+
+    class Line {
+        +Line()
+        +Line(double, double, double, double)
+        +setPoints(double, double, double, double) Line
+        +copy() Line
+    }
+
+    class Text {
+        +Text()
+        +Text(double, double, double, String)
+        +Text(double, double, double, String, String)
+        +Text(double, double, double, double)
+        +Text(double, double, double, double, String)
+        +setFontsize(double) void
+        +getFontsize() double
+        +setText(String) void
+        +setText(double) void
+        +getText() String
+        +setAlignment(Alignment) void
+        +setStyle(boolean, boolean) void
+        +getWidth() double
+        +getHeight() double
+        +moveTo(double, double) Text
+        +copy() Text
+    }
+
+    class Arc {
+        +Arc()
+        +Arc(double, double, double, double, double, double)
+        +setInnerRadius(double) void
+        +getInnerRadiusX() double
+        +setOuterRadius(double) void
+        +getOuterRadiusX() double
+        +setStartAngle(double) void
+        +getStartAngleX() double
+        +setEndAngle(double) void
+        +getEndAngleX() double
+        +copy() Arc
+    }
+
+    class Ellipse {
+        +Ellipse()
+        +Ellipse(double, double, double, double)
+        +setRadiusX(double) Ellipse
+        +setRadiusY(double) Ellipse
+        +getRadiusX() double
+        +getRadiusY() double
+        +copy() Ellipse
+    }
+
+    class Sector {
+        +Sector()
+        +Sector(double, double, double, double, double)
+        +setRadius(double) void
+        +getRadiusX() double
+        +setStartAngle(double) void
+        +getStartAngleX() double
+        +setEndAngle(double) void
+        +getEndAngleX() double
+        +drawRadii(boolean) void
+        +copy() Sector
+    }
+
+    class RoundedRectangle {
+        +RoundedRectangle()
+        +RoundedRectangle(double, double, double, double, double)
+        +setWidth(double) RoundedRectangle
+        +setHeight(double) RoundedRectangle
+        +setRadius(double) RoundedRectangle
+        +getWidth() double
+        +getHeight() double
+        +getRadius() double
+        +moveTo(double, double) RoundedRectangle
+        +copy() RoundedRectangle
+    }
+
+    class TileImage {
+        +move(double, double) void
+        +scale(double) void
+        +mirrorX() void
+        +mirrorY() void
+        +getOffsetX() double
+        +getOffsetY() double
+        +getScaleX() double
+        +getScaleY() double
+        +getSprite() Sprite
     }
 
     Shape <|-- Circle
     Shape <|-- Rectangle
     Shape <|-- Triangle
+    Shape <|-- Polygon
     Shape <|-- Line
-    Shape <|-- Text
     Shape <|-- Ellipse
     Shape <|-- RoundedRectangle
-    Shape <|-- TileImage
-    Shape <|-- Bitmap
+    Shape <|-- Group
 
-    FilledShape <|-- Sector
     FilledShape <|-- Polygon
+    FilledShape <|-- Text
     FilledShape <|-- Arc
+    FilledShape <|-- Sector
 
-    Group <|-- Shape
     Group "1" *-- "many" Shape : contains
     World "1" *-- "many" Shape : manages
 ```
@@ -106,6 +275,8 @@ This diagram shows the public API for using the graphics library:
 
 - **Shape**: Base class for all shapes with common transformation and rendering methods
 - **FilledShape**: Helper class for shapes with fill colors (provides static default setters)
-- **Group**: Container for organizing multiple shapes
+- **Group**: Container for organizing multiple shapes (extends Shape)
 - **World**: Manages the game world and all shapes
-- **Concrete Shape Classes**: Circle, Rectangle, Triangle, Polygon, Line, Text, Arc, Ellipse, Sector, RoundedRectangle, TileImage, Bitmap
+- **Concrete Shape Classes**: Circle, Rectangle, Triangle, Polygon, Line, Text, Arc, Ellipse, Sector, RoundedRectangle, TileImage
+- **Abstract Shape Classes**: Shape, FilledShape, Group
+```
