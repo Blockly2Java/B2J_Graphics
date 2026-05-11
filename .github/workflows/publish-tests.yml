@@ -91,4 +91,4 @@ jobs:
           CENTRAL_USERNAME: ${{ secrets.OSSRH_USER }} 
           CENTRAL_PASSWORD: ${{ secrets.OSSRH_TOKEN }} 
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-        run: mvn clean deploy -B -DskipTests
+        run: mvn clean deploy -B -DskipTests -Dgpg.passphrase="$GPG_PASSPHRASE"
