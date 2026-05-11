@@ -86,6 +86,7 @@
                 <configuration>
                     <archive>
                         <manifest>
+                            <mainClass>B2J_Graphics_Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
