@@ -28,7 +28,28 @@ classDiagram
     %% Base Classes
     class Shape {
         <<Abstract>>
-        #double centerX
+        +copy()
+        +setFillColor(Color|int|String)
+        +setBorderColor(Color|int|String)
+        +setBorderWidth(double)
+        +setAlpha(double)
+        +setVisible(boolean)
+        +setStatic(boolean)
+        +move(double, double)
+        +moveTo(double, double)
+        +setX(double)
+        +setY(double)
+        +rotate(double)
+        +scale(double)
+        +mirrorX()
+        +mirrorY()
+        +forward(double)
+        +getAngle()
+        +containsPoint(double, double)
+        +tint(Color|int|String)
+        +collidesWith(Shape)
+        +destroy()
+        +getWorld()
         #double centerY
         #double angleDeg
         #double scaleFactor
@@ -94,62 +115,26 @@ classDiagram
 
     class FilledShape {
         <<Abstract>>
-        +static void setDefaultBorder(double width, String color)
-        +static void setDefaultBorder(double width, int color, double alpha)
-        +static void setDefaultFillColor(String color)
-        +static void setDefaultFillColor(int color, double alpha)
-        +static void setDefaultFillColor(int color)
+        +setDefaultBorder(double, String)
+        +setDefaultFillColor(String)
     }
 
     class Group {
-        +Group()
-        +Group(Shape... shapes)
-        +void add(Shape shape)
-        +void add(Shape... shapes)
-        +void remove(Shape shape)
-        +void remove(int index)
-        +T get(int index)
-        +int indexOf(Shape shape)
-        +int size()
-        +void empty()
-        +void destroyAllChildren()
-        +List<Shape> getChildren()
+        +add(Shape...)
+        +remove(Shape)
+        +get(int)
+        +size()
+        +getChildren()
     }
 
     class World {
-        -static World currentWorld
-        -double currentLeft
-        -double currentTop
-        -double currentWidth
-        -double currentHeight
-        -double worldRotationDeg
-        -boolean flippedY
-        -Color backgroundColor
-        -List<Shape> allShapes
-        -List<Shape> rootShapes
-        -Group<? extends Shape> defaultGroup
-        +World()
-        +World(double width, double height)
-        +static World getWorld()
-        +static void clear()
-        +Group<? extends Shape> getDefaultGroup()
-        +void setDefaultGroup(Group<? extends Shape> defaultGroup)
-        +void setBackgroundColor(Color color)
-        +void setBackgroundColor(int color)
-        +void setBackgroundColor(String color)
-        +Color getBackgroundColor()
-        +void move(double dx, double dy)
-        +void rotate(double angleInDeg, double centerX, double centerY)
-        +void scale(double factor, double centerX, double centerY)
-        +void flipY()
-        +void setCoordinateSystem(double left, double top, double width, double height)
-        +void follow(Shape shape, double margin, double xMin, double xMax, double yMin, double yMax)
-        +List<Shape> getAllShapes()
-        +List<Shape> getRootShapes()
-        +double getWidth()
-        +double getHeight()
-        +double getTop()
-        +double getLeft()
+        +getWidth()
+        +getHeight()
+        +getBackgroundColor()
+        +setBackgroundColor(Color|int|String)
+        +move(double, double)
+        +follow(Shape, double)
+        +getAllShapes()
     }
 
     %% Shape Inheritance
@@ -185,35 +170,38 @@ classDiagram
     World "1" *-- "many" Shape : manages
     World "1" *-- "1" Group : defaultGroup
 
-    %% Helper Classes
-    class Color {
-        +int red
-        +int green
-        +int blue
-        +int alpha
-        +static Color parse(String color)
-        +static Color fromInt(int color)
-        +int toInt()
-    }
+    Shape <|-- FilledShape
+    Shape <|-- Circle
+    Shape <|-- Rectangle
+    Shape <|-- Triangle
+    Shape <|-- Polygon
+    Shape <|-- Line
+    Shape <|-- Text
+    Shape <|-- Arc
+    Shape <|-- Ellipse
+    Shape <|-- Sector
+    Shape <|-- RoundedRectangle
+    Shape <|-- TileImage
+    Shape <|-- Bitmap
 
-    class Direction {
-        <<Enumeration>>
-        top
-        right
-        bottom
-        left
-    }
+    FilledShape <|-- Circle
+    FilledShape <|-- Rectangle
+    FilledShape <|-- Triangle
+    FilledShape <|-- Polygon
+    FilledShape <|-- Arc
+    FilledShape <|-- Ellipse
+    FilledShape <|-- Sector
+    FilledShape <|-- RoundedRectangle
 
-    Shape ..> Color : uses
-    Shape ..> Direction : returns
+    Group <|-- Shape
+    Group "1" *-- "many" Shape : contains
+    World "1" *-- "many" Shape : manages
 ```
 
-This diagram shows the class hierarchy and relationships within the graphics library:
+This diagram shows the public API for using the graphics library:
 
-- **Shape**: Abstract base class for all graphical shapes with common properties and methods
-- **FilledShape**: Abstract subclass of Shape for shapes with fill and border colors
-- **Group**: Container class that can hold multiple shapes
-- **World**: Manages the game world, all shapes, and provides rendering context
+- **Shape**: Base class for all shapes with common transformation and rendering methods
+- **FilledShape**: Subclass for shapes with fill colors
+- **Group**: Container for organizing multiple shapes
+- **World**: Manages the game world and all shapes
 - **Concrete Shape Classes**: Circle, Rectangle, Triangle, Polygon, Line, Text, Arc, Ellipse, Sector, RoundedRectangle, TileImage, Bitmap
-- **Color**: Helper class for color representation
-- **Direction**: Enumeration for directional values
