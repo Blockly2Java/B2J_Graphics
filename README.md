@@ -22,10 +22,7 @@ Add the following dependency to you `pom.xml`
 
 ```mermaid
 classDiagram
-    %% Hide private and protected elements
-    hide circle
-    hide link
-    hide cardinality
+    classStyle default hideEmptyMembers:true
 
     %% Base Classes
     class Shape {
