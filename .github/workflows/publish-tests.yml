@@ -42,6 +42,10 @@ jobs:
 
       - name: Publish to GitHub Packages
         run: mvn -B -DskipTests clean deploy
+
+
+
+        
   publish_maven:
     name: Publish to Maven Central
     runs-on: ubuntu-latest
@@ -52,13 +56,28 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          java-version: '17' # Change to your Java version
+          java-version: '17' # Adjust to your Java version if needed
           distribution: 'temurin'
-          server-id: central
-          server-username: ${{ secrets.OSSRH_USER }}
-          server-password: ${{ secrets.OSSRH_TOKEN }}
+          server-id: central 
+          server-username: CENTRAL_USERNAME 
+          server-password: CENTRAL_PASSWORD 
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-          gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          gpg-passphrase: GPG_PASSPHRASE
+
+          # --- DIAGNOSTIC STEP ---
+      - name: Verify Secrets are Loaded
+        env:
+          U: ${{ secrets.OSSRH_USER }}
+          P: ${{ secrets.OSSRH_TOKEN }}
+        run: |
+          echo "Username length: ${#U}"
+          echo "Token length: ${#P}"
+          if [ -z "$U" ] || [ -z "$P" ]; then
+            echo "::error::Secrets are empty! Check your repository settings."
+            exit 1
+          fi
+
+
       - name: Extract version from tag
         id: version
         run: echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
@@ -66,9 +85,10 @@ jobs:
       - name: Update version in pom.xml
         run: mvn -B versions:set -DnewVersion=${{ steps.version.outputs.version }} -DgenerateBackupPoms=false
 
-      - name: Publish to Maven Central
+      - name: Publish package
         env:
-          OSSRH_USERNAME: ${{ secrets.OSSRH_USER }}
-          OSSRH_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+          # Mapping your specific GitHub Secrets to the variables Maven expects
+          CENTRAL_USERNAME: ${{ secrets.OSSRH_USER }} 
+          CENTRAL_PASSWORD: ${{ secrets.OSSRH_TOKEN }} 
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-        run: mvn clean deploy -B -DskipTests -Dgpg.passphrase=${{ secrets.GPG_PASSPHRASE }}
+        run: mvn clean deploy -B -DskipTests
