@@ -22,19 +22,26 @@ Add the following dependency to you `pom.xml`
 
 ```mermaid
 classDiagram
+    %% Hide private and protected elements
+    hide circle
+    hide link
+    hide cardinality
+
     %% Base Classes
     class Shape {
-        +double centerX
-        +double centerY
-        +double angleDeg
-        +double scaleFactor
-        +boolean visible
-        +boolean isStatic
-        +Color fillColor
-        +Color borderColor
-        +double borderWidth
-        +World world
-        +Group<? extends Shape> belongsToGroup
+        <<Abstract>>
+        #double centerX
+        #double centerY
+        #double angleDeg
+        #double scaleFactor
+        #boolean visible
+        #boolean isStatic
+        #Color fillColor
+        #Color borderColor
+        #double borderWidth
+        #World world
+        #Group<? extends Shape> belongsToGroup
+        #static boolean defaultVisibility
         +Shape copy()
         +Shape setFillColor(Color color)
         +Shape setFillColor(int color)
@@ -60,6 +67,8 @@ classDiagram
         +boolean containsPoint(double x, double y)
         +boolean isOutsideView()
         +Shape tint(int color)
+        +Shape tint(String color)
+        +Shape tint(Color color)
         +Direction directionRelativeTo(Shape other)
         +Shape moveBackFrom(Shape other, boolean keepColliding)
         +boolean collidesWith(Shape other)
@@ -68,15 +77,25 @@ classDiagram
         +List<Shape> getCollidingShapes(Group<? extends Shape> group)
         +World getWorld()
         +void destroy()
-        +Bounds getBounds()
+        +Shape defineCenter(double x, double y)
+        +Shape defineCenterRelative(double relX, double relY)
+        +double getCenterX()
+        +double getCenterY()
+        +Shape bringToFront()
+        +Shape sendToBack()
+        +Color getFillColor()
+        +int getFillColorAsInt()
+        +Color getBorderColor()
+        +int getBorderColorAsInt()
+        +double getBorderWidth()
+        +double getAlpha()
+        +boolean isVisible()
+        +boolean isStatic()
+        +static void setDefaultVisibility(boolean visible)
     }
 
     class FilledShape {
         <<Abstract>>
-        +static int defaultFillColor
-        +static double defaultFillAlpha
-        +static Integer defaultBorderColor
-        +static double defaultBorderWidth
         +static void setDefaultBorder(double width, String color)
         +static void setDefaultBorder(double width, int color, double alpha)
         +static void setDefaultFillColor(String color)
@@ -85,7 +104,6 @@ classDiagram
     }
 
     class Group {
-        +List<Shape> children
         +Group()
         +Group(Shape... shapes)
         +void add(Shape shape)
@@ -98,36 +116,19 @@ classDiagram
         +void empty()
         +void destroyAllChildren()
         +List<Shape> getChildren()
-        +void bringChildToFront(Shape child)
-        +void sendChildToBack(Shape child)
     }
 
     class World {
         +static World currentWorld
-        +double currentLeft
-        +double currentTop
-        +double currentWidth
-        +double currentHeight
-        +Color backgroundColor
-        +List<Shape> allShapes
-        +List<Shape> rootShapes
-        +Group<? extends Shape> defaultGroup
         +World()
         +World(double width, double height)
         +static World getWorld()
         +static void clear()
-        +void registerShape(Shape shape)
-        +void deregisterShape(Shape shape)
-        +void bringToFront(Shape shape)
-        +void sendToBack(Shape shape)
-        +double getWidth()
-        +double getHeight()
-        +double getTop()
-        +double getLeft()
         +Group<? extends Shape> getDefaultGroup()
         +void setDefaultGroup(Group<? extends Shape> defaultGroup)
         +void setBackgroundColor(Color color)
         +void setBackgroundColor(int color)
+        +void setBackgroundColor(String color)
         +Color getBackgroundColor()
         +void move(double dx, double dy)
         +void rotate(double angleInDeg, double centerX, double centerY)
@@ -137,6 +138,10 @@ classDiagram
         +void follow(Shape shape, double margin, double xMin, double xMax, double yMin, double yMax)
         +List<Shape> getAllShapes()
         +List<Shape> getRootShapes()
+        +double getWidth()
+        +double getHeight()
+        +double getTop()
+        +double getLeft()
     }
 
     %% Shape Inheritance
