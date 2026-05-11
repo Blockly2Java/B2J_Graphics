@@ -119,7 +119,17 @@ classDiagram
     }
 
     class World {
-        +static World currentWorld
+        -static World currentWorld
+        -double currentLeft
+        -double currentTop
+        -double currentWidth
+        -double currentHeight
+        -double worldRotationDeg
+        -boolean flippedY
+        -Color backgroundColor
+        -List<Shape> allShapes
+        -List<Shape> rootShapes
+        -Group<? extends Shape> defaultGroup
         +World()
         +World(double width, double height)
         +static World getWorld()
