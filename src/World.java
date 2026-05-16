@@ -2,7 +2,21 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javafx.application.Platform;
+
 public class World {
+    static {
+        // Ensure JavaFX Toolkit is initialized before any World instance is created.
+        // This allows the library to be used as a dependency without requiring
+        // consumers to extend javafx.application.Application.
+        try {
+            Platform.startup(() -> {
+                // No-op — only here to initialize the JavaFX Toolkit
+            });
+        } catch (IllegalStateException e) {
+            // Toolkit already initialized (e.g., via Application.launch() in B2J_Graphics_Main)
+        }
+    }
         private static World currentWorld;
 
     private double currentLeft;
