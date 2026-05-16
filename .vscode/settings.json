@@ -1,3 +1,12 @@
 {
-    "java.configuration.updateBuildConfiguration": "automatic"
+  "maven.executable.useWrapper": true,
+  "maven.terminal.useJavaHome": true,
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.import.maven.enabled": true,
+  "java.jdt.maven.home": "",
+  "java.project.referencedLibraries": [],
+  "maven.dependency.resolve.timeout": 300,
+  "java.compile.nullAnalysis.mode": "disabled",
+  "java.jdt.ls.vmargs": "-Xmx2G -Xms100m --add-modules=ALL-SYSTEM --add-opens java.base/java.lang=ALL-SYSTEM --add-opens java.base/java.util=ALL-SYSTEM",
+  "java.import.maven.disableTestClasspathFlag": false
 }

@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Run B2J_Graphics_Main (Maven)",
+      "request": "launch",
+      "mainClass": "B2J_Graphics_Main",
+      "preLaunchTask": "mvnw: compile with javafx deps",
+      "vmArgs": "--module-path /home/vale/.m2/repository/org/openjfx/javafx-controls/17/javafx-controls-17-linux.jar:/home/vale/.m2/repository/org/openjfx/javafx-graphics/17/javafx-graphics-17-linux.jar:/home/vale/.m2/repository/org/openjfx/javafx-base/17/javafx-base-17-linux.jar --add-modules=javafx.controls,javafx.graphics,javafx.base"
+    }
+  ]
+}
