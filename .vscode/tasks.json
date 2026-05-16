@@ -1,0 +1,45 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "mvnw: generate-sources compile",
+      "type": "shell",
+      "command": "./mvnw",
+      "windows": {
+        "command": "./mvnw.cmd"
+      },
+      "args": [
+        "-q",
+        "-DskipTests",
+        "generate-sources",
+        "compile"
+      ],
+      "group": "build",
+      "problemMatcher": "$javac"
+    },
+    {
+      "label": "mvnw: compile with javafx deps",
+      "type": "shell",
+      "command": "./mvnw",
+      "windows": {
+        "command": "./mvnw.cmd"
+      },
+      "args": [
+        "-q",
+        "dependency:build-classpath",
+        "-Dmdep.outputFile=${workspaceFolder}/.vscode/classpath.txt",
+        "compile"
+      ],
+      "group": "build",
+      "problemMatcher": "$javac",
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "clear": false
+      }
+    }
+  ]
+}

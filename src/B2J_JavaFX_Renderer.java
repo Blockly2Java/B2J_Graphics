@@ -21,12 +21,23 @@ public class B2J_JavaFX_Renderer {
         Scene scene;
         javafx.scene.Group root;
         
-        JavaFXWindow(String title, double width, double height) {
-            stage = new Stage();
-            stage.setTitle(title);
+        JavaFXWindow(String title, double width, double height, Color backgroundColor) {
             root = new javafx.scene.Group();
             scene = new Scene(root, width, height);
+        
+            stage = new Stage();
+            stage.setTitle(title);
+            
+            // Set the scene background color to match the world background color
+            scene.setFill(new javafx.scene.paint.Color(backgroundColor.red, backgroundColor.green, backgroundColor.blue, backgroundColor.alpha));
+            
             stage.setScene(scene);
+            stage.setWidth(width);
+            stage.setHeight(height);
+            stage.setMinWidth(width);
+            stage.setMinHeight(height);
+            stage.setMaxWidth(width);
+            stage.setMaxHeight(height);
             stage.show();
         }
     }
@@ -34,9 +45,9 @@ public class B2J_JavaFX_Renderer {
     /**
      * Create a JavaFX window for a new World
      */
-    public static void createWindow(World world, String title, double width, double height) {
+    public static void createWindow(World world, String title, double width, double height, Color backgroundColor) {
         Platform.runLater(() -> {
-            JavaFXWindow window = new JavaFXWindow(title, width, height);
+            JavaFXWindow window = new JavaFXWindow(title, width, height, backgroundColor);
             worldWindows.put(world, window);
         });
     }
@@ -45,14 +56,14 @@ public class B2J_JavaFX_Renderer {
      * Create a JavaFX window for a new World with default title
      */
     public static void createWindow(World world, double width, double height) {
-        createWindow(world, "World", width, height);
-    }
+        createWindow(world, "World", width, height, Color.BLACK);
+    }  
     
     /**
      * Create a JavaFX window for a new World with default dimensions
      */
     public static void createWindow(World world) {
-        createWindow(world, "World", 800, 600);
+        createWindow(world, "World", world.getWidth(), world.getHeight(), world.getBackgroundColor());
     }
     
     /**
@@ -237,15 +248,17 @@ public class B2J_JavaFX_Renderer {
      * Apply common properties (fill color, border, alpha, etc.) to a JavaFX shape
      */
     private static <T extends javafx.scene.shape.Shape> void applyCommonProperties(T node, Shape shape) {
-        if (shape.getFillColor() != null) {
-            javafx.scene.paint.Color fxColor = toJavaFXColor(shape.getFillColor(), shape.getAlpha());
-            node.setFill(fxColor);
-        } else {
-            node.setFill(null);
-        }
+
+        Color shapeFillColor = shape.getFillColor();
+        if (shapeFillColor == null) {
+            shapeFillColor = new Color(127, 127, 255);
+        } 
         
+        javafx.scene.paint.Color fxColor = toJavaFXColor(shapeFillColor, shape.getAlpha());
+        node.setFill(fxColor);
+
         if (shape.getBorderColor() != null && shape.getBorderWidth() > 0) {
-            javafx.scene.paint.Color fxColor = toJavaFXColor(shape.getBorderColor(), shape.getAlpha());
+            fxColor = toJavaFXColor(shape.getBorderColor(), shape.getAlpha());
             node.setStroke(fxColor);
             node.setStrokeWidth(shape.getBorderWidth());
         } else {
@@ -261,9 +274,9 @@ public class B2J_JavaFX_Renderer {
      */
     private static javafx.scene.paint.Color toJavaFXColor(Color b2jColor, double alpha) {
         return javafx.scene.paint.Color.rgb(
-            (int) (b2jColor.red * 255),
-            (int) (b2jColor.green * 255),
-            (int) (b2jColor.blue * 255),
+            b2jColor.red,
+            b2jColor.green,
+            b2jColor.blue,
             alpha
         );
     }
