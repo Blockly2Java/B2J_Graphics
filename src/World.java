@@ -27,15 +27,12 @@ public class World {
     private double worldRotationDeg;
     private boolean flippedY;
 
-    private Color backgroundColor = new Color(0, 0, 0);
+    private Color backgroundColor = Color.BLACK;
 
     private final List<Shape> allShapes = new ArrayList<>();
     private final List<Shape> rootShapes = new ArrayList<>();
 
     private Group<? extends Shape> defaultGroup;
-    
-    private javafx.stage.Stage stage;
-    private javafx.scene.Group rootGroup;
 
     public World() {
         this(800, 600);
@@ -55,50 +52,9 @@ public class World {
      * Create a JavaFX window for this world
      */
     private void createJavaFXWindow() {
-        javafx.application.Platform.runLater(() -> {
-            stage = new javafx.stage.Stage();
-            stage.setTitle("World");
-            
-            rootGroup = new javafx.scene.Group();
-            javafx.scene.Scene scene = new javafx.scene.Scene(rootGroup, currentWidth, currentHeight);
-            
-            // Set the scene background color to match the world background color
-            scene.setFill(new javafx.scene.paint.Color(backgroundColor.red, backgroundColor.green, backgroundColor.blue, backgroundColor.alpha));
-            
-            stage.setScene(scene);
-            stage.setWidth(currentWidth);
-            stage.setHeight(currentHeight);
-            stage.setMinWidth(currentWidth);
-            stage.setMinHeight(currentHeight);
-            stage.setMaxWidth(currentWidth);
-            stage.setMaxHeight(currentHeight);
-            stage.show();
-        });
-    }
-    
-    /**
-     * Set the title of the JavaFX window
-     */
-    public void setWindowTitle(String title) {
-        javafx.application.Platform.runLater(() -> {
-            if (stage != null) {
-                stage.setTitle(title);
-            }
-        });
-    }
-    
-    /**
-     * Get the JavaFX root group for adding shapes directly
-     */
-    public javafx.scene.Group getJavaFXRootGroup() {
-        return rootGroup;
-    }
-    
-    /**
-     * Get the JavaFX stage
-     */
-    public javafx.stage.Stage getJavaFXStage() {
-        return stage;
+        //javafx.application.Platform.runLater(() -> {
+            B2J_JavaFX_Renderer.createWindow(this, "World", currentWidth, currentHeight, backgroundColor);
+        //});
     }
     
     
