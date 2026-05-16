@@ -46,10 +46,10 @@ public class B2J_JavaFX_Renderer {
      * Create a JavaFX window for a new World
      */
     public static void createWindow(World world, String title, double width, double height, Color backgroundColor) {
-        //Platform.runLater(() -> {
+        Platform.runLater(() -> {
             JavaFXWindow window = new JavaFXWindow(title, width, height, backgroundColor);
             worldWindows.put(world, window);
-        //});
+        });
     }
     
     /**
