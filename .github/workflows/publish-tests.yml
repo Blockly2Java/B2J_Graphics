@@ -22,7 +22,7 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          java-version: '17' # Adjust to your Java version if needed
+          java-version: '25' # Adjust to your Java version if needed
           distribution: 'temurin'
           server-id: central 
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
