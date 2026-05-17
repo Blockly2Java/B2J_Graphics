@@ -1,3 +1,4 @@
+import java.awt.GraphicsEnvironment;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +11,9 @@ import javafx.util.Duration;
 /**
  * Zeigt ein Bild aus der Sprite-Bibliothek an und kann Frame-Animationen abspielen.
  */
-public class Sprite extends Shape {
+class Sprite extends Shape {
+
+    private static final boolean FX_AVAILABLE = !GraphicsEnvironment.isHeadless();
     private static final String DEFAULT_SPRITE_BASE = "/sprites";
 
     private SpriteLibrary spriteLibrary;
@@ -67,7 +70,7 @@ public class Sprite extends Shape {
         this.spriteLibrary = spriteLibrary;
         this.imageIndex = imageIndex;
         loadImage();
-        if (world != null) {
+        if (FX_AVAILABLE && world != null) {
             B2J_JavaFX_Renderer.updateShape(this);
         }
     }
@@ -75,7 +78,7 @@ public class Sprite extends Shape {
     public void setImageIndex(int imageIndex) {
         this.imageIndex = imageIndex;
         loadImage();
-        if (world != null) {
+        if (FX_AVAILABLE && world != null) {
             B2J_JavaFX_Renderer.updateShape(this);
         }
     }
@@ -155,7 +158,7 @@ public class Sprite extends Shape {
     public void makeTiling(double width, double height) {
         this.baseWidth = width;
         this.baseHeight = height;
-        if (world != null) {
+        if (FX_AVAILABLE && world != null) {
             B2J_JavaFX_Renderer.updateShape(this);
         }
     }
@@ -172,28 +175,36 @@ public class Sprite extends Shape {
         if (image == null) {
             return 0;
         }
-        PixelReader reader = image.getPixelReader();
-        if (reader == null) {
+        try {
+            PixelReader reader = image.getPixelReader();
+            if (reader == null) {
+                return 0;
+            }
+            int ix = clampPixel(x, image.getWidth());
+            int iy = clampPixel(y, image.getHeight());
+            return reader.getArgb(ix, iy) & 0x00ffffff;
+        } catch (Exception e) {
             return 0;
         }
-        int ix = clampPixel(x, image.getWidth());
-        int iy = clampPixel(y, image.getHeight());
-        return reader.getArgb(ix, iy) & 0x00ffffff;
     }
 
     public double getPixelAlpha(int x, int y) {
         if (image == null) {
             return 0.0;
         }
-        PixelReader reader = image.getPixelReader();
-        if (reader == null) {
+        try {
+            PixelReader reader = image.getPixelReader();
+            if (reader == null) {
+                return 0.0;
+            }
+            int ix = clampPixel(x, image.getWidth());
+            int iy = clampPixel(y, image.getHeight());
+            int argb = reader.getArgb(ix, iy);
+            int alpha = (argb >> 24) & 0xff;
+            return alpha / 255.0;
+        } catch (Exception e) {
             return 0.0;
         }
-        int ix = clampPixel(x, image.getWidth());
-        int iy = clampPixel(y, image.getHeight());
-        int argb = reader.getArgb(ix, iy);
-        int alpha = (argb >> 24) & 0xff;
-        return alpha / 255.0;
     }
 
     public Image getImage() {
@@ -208,6 +219,12 @@ public class Sprite extends Shape {
     }
 
     private void loadImage() {
+        if (!FX_AVAILABLE) {
+            image = null;
+            baseWidth = Math.max(baseWidth, 50);
+            baseHeight = Math.max(baseHeight, 50);
+            return;
+        }
         Image loaded = null;
         if (spriteLibrary != null) {
             String resourcePath = String.format("%s/%s/%d.png", DEFAULT_SPRITE_BASE, spriteLibrary.getName(), imageIndex);
@@ -233,6 +250,9 @@ public class Sprite extends Shape {
     }
 
     private void startTimeline(int imagesPerSecond, List<Integer> sequence) {
+        if (!FX_AVAILABLE) {
+            return;
+        }
         stopAnimation();
         if (imagesPerSecond <= 0) {
             imagesPerSecond = 1;

@@ -1,3 +1,4 @@
+import java.awt.GraphicsEnvironment;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -11,19 +12,31 @@ import javafx.application.Platform;
  * lassen Sie Actoren animieren oder auf Tastatur- und Maus-Eingaben reagieren.</p>
  */
 public class World implements IWorld {
+
+    /**
+     * Returns true if JavaFX is available (not running on a headless system).
+     */
+    private static final boolean FX_AVAILABLE = !GraphicsEnvironment.isHeadless();
+
     static {
-        // Ensure JavaFX Toolkit is initialized before any World instance is created.
-        // This allows the library to be used as a dependency without requiring
-        // consumers to extend javafx.application.Application.
-        try {
-            Platform.startup(() -> {
-                // No-op — only here to initialize the JavaFX Toolkit
-            });
-        } catch (IllegalStateException e) {
-            // Toolkit already initialized (e.g., via Application.launch() in B2J_Graphics_Main)
+        if (FX_AVAILABLE) {
+            // Ensure JavaFX Toolkit is initialized before any World instance is created.
+            // This allows the library to be used as a dependency without requiring
+            // consumers to extend javafx.application.Application.
+            try {
+                Platform.startup(() -> {
+                    // No-op — only here to initialize the JavaFX Toolkit
+                });
+            } catch (IllegalStateException e) {
+                // Toolkit already initialized (e.g., via Application.launch() in B2J_Graphics_Main)
+            } catch (Exception e) {
+                // JavaFX initialization failed on this headless system; FX_AVAILABLE should have caught this,
+                // but some environments report non-headless while still lacking JavaFX natives.
+            }
         }
     }
-        private static World currentWorld;
+
+    private static World currentWorld;
 
     private double currentLeft;
     private double currentTop;
@@ -60,8 +73,10 @@ public class World implements IWorld {
         this.currentWidth = width;
         this.currentHeight = height;
         currentWorld = this;
-        // Create JavaFX window for this world
-        createJavaFXWindow();
+        // Create JavaFX window for this world (no-op on headless systems)
+        if (FX_AVAILABLE) {
+            createJavaFXWindow();
+        }
     }
     
     /**
@@ -286,10 +301,11 @@ public class World implements IWorld {
 
     @Override
     public void setCursor(String cursor) {
-        if (scene != null) {
-            javafx.scene.Cursor fxCursor = javafx.scene.Cursor.cursor(cursor);
-            scene.setCursor(fxCursor);
+        if (!FX_AVAILABLE || scene == null) {
+            return;
         }
+        javafx.scene.Cursor fxCursor = javafx.scene.Cursor.cursor(cursor);
+        scene.setCursor(fxCursor);
     }
 
     /**

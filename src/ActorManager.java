@@ -1,3 +1,4 @@
+import java.awt.GraphicsEnvironment;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashSet;
@@ -15,7 +16,9 @@ import javafx.scene.input.KeyEvent;
 /**
  * Registriert Actoren und verteilt deren `act`- und Tastatur-Callbacks.
  */
-public class ActorManager {
+class ActorManager {
+
+    private static final boolean FX_AVAILABLE = !GraphicsEnvironment.isHeadless();
     private final EnumMap<ActorType, List<Actor>> actors = new EnumMap<>(ActorType.class);
     private final Set<String> keysDown = new HashSet<>();
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
@@ -30,13 +33,18 @@ public class ActorManager {
         for (ActorType type : ActorType.values()) {
             actors.put(type, new ArrayList<>());
         }
-        if (scene != null) {
+        if (FX_AVAILABLE && scene != null) {
             registerKeyboardListeners(scene);
         }
-        setTimerFrequency(timerFrequencyHz);
+        if (FX_AVAILABLE) {
+            setTimerFrequency(timerFrequencyHz);
+        }
     }
 
     private void registerKeyboardListeners(Scene scene) {
+        if (!FX_AVAILABLE) {
+            return;
+        }
         scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
             String key = normalizeKey(event.getText(), event.getCode().getName());
             keysDown.add(key);
@@ -107,7 +115,11 @@ public class ActorManager {
         }
         actTask = scheduler.scheduleAtFixedRate(() -> {
             double dt = 1000.0 / timerFrequencyHz;
-            Platform.runLater(() -> callActMethods(dt));
+            if (FX_AVAILABLE) {
+                Platform.runLater(() -> callActMethods(dt));
+            } else {
+                callActMethods(dt);
+            }
         }, 0, Math.max(1, 1000 / timerFrequencyHz), TimeUnit.MILLISECONDS);
     }
 

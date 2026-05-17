@@ -1,3 +1,4 @@
+import java.awt.GraphicsEnvironment;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +12,9 @@ import javafx.scene.input.MouseEvent;
  * {@code MouseButton.ordinal()}: 0 = NONE, 1 = PRIMARY (normalerweise links), 2 = MIDDLE,
  * 3 = SECONDARY (normalerweise rechts). Höhere Werte stehen für zusätzliche Tasten zur Verfügung.</p>
  */
-public class MouseManager {
+class MouseManager {
+
+    private static final boolean FX_AVAILABLE = !GraphicsEnvironment.isHeadless();
     private final World world;
     private final List<MouseListener> javaMouseListeners = new ArrayList<>();
     private final List<Shape> shapesWithMouseMethods = new ArrayList<>();
@@ -21,12 +24,15 @@ public class MouseManager {
      */
     public MouseManager(World world, Scene scene) {
         this.world = world;
-        if (scene != null) {
+        if (FX_AVAILABLE && scene != null) {
             registerListeners(scene);
         }
     }
 
     private void registerListeners(Scene scene) {
+        if (!FX_AVAILABLE) {
+            return;
+        }
         scene.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> handleMouseEvent(event, MouseEventKind.DOWN));
         scene.addEventHandler(MouseEvent.MOUSE_RELEASED, event -> handleMouseEvent(event, MouseEventKind.UP));
         scene.addEventHandler(MouseEvent.MOUSE_MOVED, event -> handleMouseEvent(event, MouseEventKind.MOVE));

@@ -1,3 +1,4 @@
+import java.awt.GraphicsEnvironment;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
@@ -11,8 +12,10 @@ import javafx.stage.Stage;
  * Übernimmt das JavaFX-Rendering für B2J-Grafiken.
  * Verwaltet JavaFX-Stages für jede `World` und wandelt B2J-Formen in JavaFX-Knoten um.
  */
-public class B2J_JavaFX_Renderer {
-    
+class B2J_JavaFX_Renderer {
+
+    private static final boolean FX_AVAILABLE = !GraphicsEnvironment.isHeadless();
+
     private static final Map<World, JavaFXWindow> worldWindows = new HashMap<>();
     private static final Map<Shape, javafx.scene.Node> shapeNodes = new IdentityHashMap<>();
     
@@ -58,6 +61,9 @@ public class B2J_JavaFX_Renderer {
 
     public static void createWindow(World world, String title, double width, double height, Color backgroundColor,
             Consumer<Scene> onReady) {
+        if (!FX_AVAILABLE) {
+            return;
+        }
         Platform.runLater(() -> {
             JavaFXWindow window = new JavaFXWindow(title, width, height, backgroundColor);
             worldWindows.put(world, window);
@@ -85,6 +91,9 @@ public class B2J_JavaFX_Renderer {
      * Add a shape to the JavaFX rendering
      */
     public static void addShape(Shape shape) {
+        if (!FX_AVAILABLE) {
+            return;
+        }
         Platform.runLater(() -> {
             JavaFXWindow window = worldWindows.get(shape.getWorld());
             if (window != null && shape.isVisible()) {
@@ -101,6 +110,9 @@ public class B2J_JavaFX_Renderer {
      * Remove a shape from the JavaFX rendering
      */
     public static void removeShape(Shape shape) {
+        if (!FX_AVAILABLE) {
+            return;
+        }
         Platform.runLater(() -> {
             JavaFXWindow window = worldWindows.get(shape.getWorld());
             if (window != null) {
@@ -116,6 +128,9 @@ public class B2J_JavaFX_Renderer {
      * Update a shape in the JavaFX rendering
      */
     public static void updateShape(Shape shape) {
+        if (!FX_AVAILABLE) {
+            return;
+        }
         Platform.runLater(() -> {
             JavaFXWindow window = worldWindows.get(shape.getWorld());
             if (window != null) {
@@ -346,6 +361,9 @@ public class B2J_JavaFX_Renderer {
      * Close the JavaFX window for a world
      */
     public static void closeWindow(World world) {
+        if (!FX_AVAILABLE) {
+            return;
+        }
         Platform.runLater(() -> {
             JavaFXWindow window = worldWindows.remove(world);
             if (window != null) {

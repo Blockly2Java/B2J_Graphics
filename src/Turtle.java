@@ -1,3 +1,4 @@
+import java.awt.GraphicsEnvironment;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +9,9 @@ import javafx.scene.shape.Polygon;
 /**
  * Turtle-Grafik-Helfer, der beim Bewegen zeichnet.
  */
-public class Turtle extends FilledShape {
+class Turtle extends FilledShape {
+
+    private static final boolean FX_AVAILABLE = !GraphicsEnvironment.isHeadless();
     private static final double DEFAULT_TURTLE_SIZE = 20.0;
 
     private final List<LineSegment> segments = new ArrayList<>();
@@ -43,7 +46,7 @@ public class Turtle extends FilledShape {
         }
         centerX = newX;
         centerY = newY;
-        if (world != null) {
+        if (FX_AVAILABLE && world != null) {
             B2J_JavaFX_Renderer.updateShape(this);
         }
         return this;
@@ -51,7 +54,7 @@ public class Turtle extends FilledShape {
 
     public void turn(double angleInDeg) {
         turtleAngleDeg = normalizeAngle(turtleAngleDeg + angleInDeg);
-        if (world != null) {
+        if (FX_AVAILABLE && world != null) {
             B2J_JavaFX_Renderer.updateShape(this);
         }
     }
@@ -72,14 +75,14 @@ public class Turtle extends FilledShape {
         LineSegment last = segments.get(segments.size() - 1);
         segments.add(new LineSegment(last.x2, last.y2, first.x1, first.y1,
             borderColor == null ? null : borderColor.toInt(), borderAlpha, borderWidth));
-        if (world != null) {
+        if (FX_AVAILABLE && world != null) {
             B2J_JavaFX_Renderer.updateShape(this);
         }
     }
 
     public void showTurtle(boolean show) {
         this.showTurtle = show;
-        if (world != null) {
+        if (FX_AVAILABLE && world != null) {
             B2J_JavaFX_Renderer.updateShape(this);
         }
     }
@@ -88,7 +91,7 @@ public class Turtle extends FilledShape {
         segments.clear();
         segments.add(new LineSegment(centerX, centerY, centerX, centerY,
             borderColor == null ? null : borderColor.toInt(), borderAlpha, borderWidth));
-        if (world != null) {
+        if (FX_AVAILABLE && world != null) {
             B2J_JavaFX_Renderer.updateShape(this);
         }
     }
@@ -109,7 +112,7 @@ public class Turtle extends FilledShape {
     public Turtle moveTo(double x, double y) {
         centerX = x;
         centerY = y;
-        if (world != null) {
+        if (FX_AVAILABLE && world != null) {
             B2J_JavaFX_Renderer.updateShape(this);
         }
         return this;
