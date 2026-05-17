@@ -93,12 +93,14 @@ public class MouseManager {
         boolean contains = shape.containsPoint(x, y);
         switch (kind) {
             case DOWN:
-                // Always dispatch mouse down events to shapes that have the handler
-                shape.onMouseDown(x, y, button);
+                if (contains || shape.trackMouseMove) {
+                    shape.onMouseDown(x, y, button);
+                }
                 break;
             case UP:
-                // Always dispatch mouse up events to shapes that have the handler
-                shape.onMouseUp(x, y, button);
+                if (contains || shape.trackMouseMove) {
+                    shape.onMouseUp(x, y, button);
+                }
                 break;
             case MOVE:
                 if (shape.trackMouseMove) {
