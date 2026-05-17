@@ -101,13 +101,21 @@ public class ActorManager {
         for (Actor actor : actActors) {
             if (actor.isActing()) {
                 actor.act();
+                refreshShape(actor);
             }
         }
         List<Actor> actTimeActors = new ArrayList<>(actors.get(ActorType.ACT_WITH_TIME));
         for (Actor actor : actTimeActors) {
             if (actor.isActing()) {
                 actor.act(deltaTimeMs);
+                refreshShape(actor);
             }
+        }
+    }
+
+    private void refreshShape(Actor actor) {
+        if (actor instanceof Shape shape && !shape.isDestroyed()) {
+            B2J_JavaFX_Renderer.updateShape(shape);
         }
     }
 

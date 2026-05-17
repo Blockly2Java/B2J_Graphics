@@ -55,6 +55,7 @@ public abstract class Shape extends Actor {
     protected boolean trackMouseMove;
     protected boolean reactToMouseEventsWhenInvisible;
     protected boolean mouseLastSeenInsideObject;
+    private Boolean cachedHasMouseHandlers;
 
     protected Color fillColor;
     protected double fillAlpha = 1.0;
@@ -630,11 +631,14 @@ public abstract class Shape extends Actor {
     }
 
     boolean hasMouseHandlers() {
-        return isMouseMethodOverridden("onMouseUp", double.class, double.class, int.class)
-            || isMouseMethodOverridden("onMouseDown", double.class, double.class, int.class)
-            || isMouseMethodOverridden("onMouseMove", double.class, double.class)
-            || isMouseMethodOverridden("onMouseEnter", double.class, double.class)
-            || isMouseMethodOverridden("onMouseLeave", double.class, double.class);
+        if (cachedHasMouseHandlers == null) {
+            cachedHasMouseHandlers = isMouseMethodOverridden("onMouseUp", double.class, double.class, int.class)
+                || isMouseMethodOverridden("onMouseDown", double.class, double.class, int.class)
+                || isMouseMethodOverridden("onMouseMove", double.class, double.class)
+                || isMouseMethodOverridden("onMouseEnter", double.class, double.class)
+                || isMouseMethodOverridden("onMouseLeave", double.class, double.class);
+        }
+        return cachedHasMouseHandlers;
     }
 
     private boolean isMouseMethodOverridden(String methodName, Class<?>... paramTypes) {
