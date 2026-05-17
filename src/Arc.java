@@ -1,3 +1,6 @@
+/**
+ * A circular arc or ring segment.
+ */
 public class Arc extends FilledShape {
     private double innerRadius;
     private double outerRadius;

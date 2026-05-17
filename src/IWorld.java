@@ -1,3 +1,6 @@
+/**
+ * Describes the basic world information available to graphics objects and actors.
+ */
 public interface IWorld {
     double getWidth();
 

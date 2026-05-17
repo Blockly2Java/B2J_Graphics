@@ -1,3 +1,6 @@
+/**
+ * An axis-aligned rectangle.
+ */
 public class Rectangle extends FilledShape {
     private double width;
     private double height;

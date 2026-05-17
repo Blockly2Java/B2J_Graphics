@@ -1,6 +1,9 @@
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A shape defined by a list of points.
+ */
 public class Polygon extends FilledShape {
     private final List<Point> points = new ArrayList<>();
     private boolean closeAndFill;

@@ -1,3 +1,6 @@
+/**
+ * Represents the Hamster agent used in the hamster world examples.
+ */
 public class Hamster {
     public static final int NORD = 0;
     public static final int OST = 1;

@@ -1,3 +1,6 @@
+/**
+ * A straight line segment with a configurable thickness.
+ */
 public class Line extends FilledShape {
     private double x1;
     private double y1;

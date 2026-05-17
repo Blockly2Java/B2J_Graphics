@@ -605,26 +605,80 @@ public abstract class Shape extends Actor {
         super.destroy();
     }
 
+    /**
+     * Wird aufgerufen, wenn eine Maustaste über der Form losgelassen wird.
+     *
+     * @param x Welt-X-Koordinate des Ereignisses
+     * @param y Welt-Y-Koordinate des Ereignisses
+     * @param button ganzzahliger Tasten-Code. Verwendet JavaFX MouseButton.ordinal():
+     *               0 = NONE, 1 = PRIMARY (normalerweise links), 2 = MIDDLE, 3 = SECONDARY (normalerweise rechts),
+     *               höhere Werte für zusätzliche Tasten.
+     */
     public void onMouseUp(double x, double y, int button) {
     }
 
+    /**
+     * Wird aufgerufen, wenn eine Maustaste über der Form gedrückt wird.
+     *
+     * @param x Welt-X-Koordinate des Ereignisses
+     * @param y Welt-Y-Koordinate des Ereignisses
+     * @param button ganzzahliger Tasten-Code. Verwendet JavaFX MouseButton.ordinal():
+     *               0 = NONE, 1 = PRIMARY (normalerweise links), 2 = MIDDLE, 3 = SECONDARY (normalerweise rechts),
+     *               höhere Werte für zusätzliche Tasten.
+     */
     public void onMouseDown(double x, double y, int button) {
     }
 
+    /**
+     * Wird aufgerufen, wenn sich die Maus bewegt. Formen erhalten Bewegungsereignisse,
+     * wenn sich der Zeiger innerhalb der Form befindet oder wenn {@link #trackMouseMove(boolean)}
+     * aktiviert ist.
+     *
+     * @param x Welt-X-Koordinate der Maus
+     * @param y Welt-Y-Koordinate der Maus
+     */
     public void onMouseMove(double x, double y) {
     }
 
+    /**
+     * Wird einmal ausgelöst, wenn die Maus den Bereich der Form betritt.
+     *
+     * @param x Welt-X-Koordinate der Maus
+     * @param y Welt-Y-Koordinate der Maus
+     */
     public void onMouseEnter(double x, double y) {
     }
 
+    /**
+     * Wird einmal ausgelöst, wenn die Maus den Bereich der Form verlässt.
+     *
+     * @param x Welt-X-Koordinate der Maus
+     * @param y Welt-Y-Koordinate der Maus
+     */
     public void onMouseLeave(double x, double y) {
     }
 
+    /**
+     * Aktiviert oder deaktiviert die Verfolgung von Mausbewegungsereignissen,
+     * auch wenn sich der Zeiger nicht strikt innerhalb der Form befindet. Wenn
+     * aktiviert, erhält die Form kontinuierlich {@link #onMouseMove(double,double)}
+     * mit der aktuellen Mausposition.
+     *
+     * @param enabled true, um die kontinuierliche Verfolgung von Mausbewegungen zu aktivieren
+     * @return diese Form zur Verkettung
+     */
     public Shape trackMouseMove(boolean enabled) {
         this.trackMouseMove = enabled;
         return this;
     }
 
+    /**
+     * Wenn auf true gesetzt, erhält die Form weiterhin Mausereignisse, selbst wenn
+     * sie nicht sichtbar ist. Nützlich für unsichtbare Trefferbereiche.
+     *
+     * @param enabled ob auf Mausereignisse reagiert werden soll, wenn die Form unsichtbar ist
+     * @return diese Form zur Verkettung
+     */
     public Shape reactToMouseEventsWhenInvisible(boolean enabled) {
         this.reactToMouseEventsWhenInvisible = enabled;
         return this;

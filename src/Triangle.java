@@ -1,3 +1,6 @@
+/**
+ * A convenience polygon for three-point shapes.
+ */
 public class Triangle extends Polygon {
     public Triangle() {
         this(0, 0, 100, 0, 0, 100);

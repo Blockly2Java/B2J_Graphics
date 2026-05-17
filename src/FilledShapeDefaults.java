@@ -1,3 +1,6 @@
+/**
+ * Convenience methods for changing the default appearance of filled shapes.
+ */
 public class FilledShapeDefaults {
     private FilledShapeDefaults() {
     }

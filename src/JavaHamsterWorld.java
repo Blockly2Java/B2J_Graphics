@@ -1,3 +1,6 @@
+/**
+ * Grid-based world used by the Hamster examples.
+ */
 public class JavaHamsterWorld extends FilledShape {
     private final int sizeX;
     private final int sizeY;

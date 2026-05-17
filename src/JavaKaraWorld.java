@@ -1,3 +1,6 @@
+/**
+ * Grid-based world used by the Kara examples.
+ */
 public class JavaKaraWorld extends FilledShape {
     public static final int NORTH = 0;
     public static final int WEST = 1;

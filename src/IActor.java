@@ -1,3 +1,6 @@
+/**
+ * Defines the callbacks an actor can implement for animation and keyboard input.
+ */
 public interface IActor {
     boolean isActing();
 

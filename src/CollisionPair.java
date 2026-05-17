@@ -1,3 +1,6 @@
+/**
+ * Holds two shapes that were detected as colliding.
+ */
 public class CollisionPair<U extends Shape, V extends Shape> {
     public U shapeA;
     public V shapeB;

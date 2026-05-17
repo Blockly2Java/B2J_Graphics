@@ -1,3 +1,6 @@
+/**
+ * A pie-slice style shape defined by a center, radius, and angle range.
+ */
 public class Sector extends FilledShape {
     private double radius;
     private double startAngleDeg;

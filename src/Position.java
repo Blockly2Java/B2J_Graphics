@@ -1,3 +1,6 @@
+/**
+ * Simple integer coordinate pair used by bitmap and geometry helper methods.
+ */
 public class Position {
     public int x;
     public int y;

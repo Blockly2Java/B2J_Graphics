@@ -1,5 +1,8 @@
 import java.util.Arrays;
 
+/**
+ * A drawable pixel grid that stores color and alpha values explicitly.
+ */
 public class Bitmap extends Shape {
     private final int resolutionX;
     private final int resolutionY;

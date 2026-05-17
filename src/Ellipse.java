@@ -1,3 +1,6 @@
+/**
+ * An ellipse centered on a world position.
+ */
 public class Ellipse extends FilledShape {
     private double radiusX;
     private double radiusY;

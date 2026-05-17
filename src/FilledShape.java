@@ -1,3 +1,6 @@
+/**
+ * Base class for shapes that can be filled and outlined.
+ */
 public abstract class FilledShape extends Shape {
     protected static int defaultFillColor = 0x8080ff;
     protected static double defaultFillAlpha = 1.0;

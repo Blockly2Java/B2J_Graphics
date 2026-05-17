@@ -4,6 +4,12 @@ import java.util.List;
 
 import javafx.application.Platform;
 
+/**
+ * Represents the drawing area that owns all shapes, actors, and mouse handling.
+ *
+ * <p>Novices usually start here: create a world, add shapes, and then let actors
+ * animate or respond to keyboard and mouse input.</p>
+ */
 public class World implements IWorld {
     static {
         // Ensure JavaFX Toolkit is initialized before any World instance is created.
@@ -38,10 +44,16 @@ public class World implements IWorld {
     private ActorManager actorManager;
     private MouseManager mouseManager;
 
+    /**
+     * Creates a world with the default size of 800 by 600 pixels.
+     */
     public World() {
         this(800, 600);
     }
 
+    /**
+     * Creates a world with the given size.
+     */
     public World(double width, double height) {
         this.currentLeft = 0;
         this.currentTop = 0;
@@ -104,6 +116,9 @@ public class World implements IWorld {
         }
     }
 
+    /**
+     * Returns the current world, creating a default world if needed.
+     */
     public static World getWorld() {
         if (currentWorld == null) {
             currentWorld = new World(800, 600);
@@ -111,6 +126,9 @@ public class World implements IWorld {
         return currentWorld;
     }
 
+    /**
+     * Removes all root shapes from the current world.
+     */
     public static void clear() {
         if (currentWorld == null) {
             return;
@@ -143,43 +161,70 @@ public class World implements IWorld {
     }
 
     @Override
+    /**
+     * Returns the current world width.
+     */
     public double getWidth() {
         return Math.round(currentWidth);
     }
 
     @Override
+    /**
+     * Returns the current world height.
+     */
     public double getHeight() {
         return Math.round(currentHeight);
     }
 
     @Override
+    /**
+     * Returns the top edge of the active coordinate system.
+     */
     public double getTop() {
         return Math.round(currentTop);
     }
 
     @Override
+    /**
+     * Returns the left edge of the active coordinate system.
+     */
     public double getLeft() {
         return Math.round(currentLeft);
     }
 
+    /**
+     * Returns the group that new shapes are attached to by default, if one was set.
+     */
     public Group<? extends Shape> getDefaultGroup() {
         return defaultGroup;
     }
 
+    /**
+     * Sets the default group for newly created shapes.
+     */
     public void setDefaultGroup(Group<? extends Shape> defaultGroup) {
         this.defaultGroup = defaultGroup;
     }
 
+    /**
+     * Changes the background color of the world.
+     */
     public void setBackgroundColor(Color color) {
         if (color != null) {
             backgroundColor = new Color(color.red, color.green, color.blue, color.alpha);
         }
     }
 
+    /**
+     * Changes the background color using an RGB integer.
+     */
     public void setBackgroundColor(int color) {
         backgroundColor = Color.fromInt(color);
     }
 
+    /**
+     * Changes the background color using a color string such as "#ffcc00" or "red".
+     */
     public void setBackgroundColor(String color) {
         Color parsed = Color.parse(color);
         if (parsed != null) {
@@ -187,19 +232,31 @@ public class World implements IWorld {
         }
     }
 
+    /**
+     * Returns a copy of the current background color.
+     */
     public Color getBackgroundColor() {
         return new Color(backgroundColor.red, backgroundColor.green, backgroundColor.blue, backgroundColor.alpha);
     }
 
+    /**
+     * Moves the visible coordinate system by the given offset.
+     */
     public void move(double dx, double dy) {
         currentLeft += dx;
         currentTop += dy;
     }
 
+    /**
+     * Rotates the world coordinate system around the given point.
+     */
     public void rotate(double angleInDeg, double centerX, double centerY) {
         worldRotationDeg = (worldRotationDeg + angleInDeg) % 360.0;
     }
 
+    /**
+     * Scales the world coordinate system around the given point.
+     */
     public void scale(double factor, double centerX, double centerY) {
         if (factor == 0) {
             return;
@@ -210,10 +267,16 @@ public class World implements IWorld {
         currentHeight = currentHeight / factor;
     }
 
+    /**
+     * Flips the Y axis so world coordinates grow upward instead of downward.
+     */
     public void flipY() {
         flippedY = !flippedY;
     }
 
+    /**
+     * Replaces the current coordinate system with a new rectangle.
+     */
     public void setCoordinateSystem(double left, double top, double width, double height) {
         currentLeft = left;
         currentTop = top;
@@ -229,6 +292,9 @@ public class World implements IWorld {
         }
     }
 
+    /**
+     * Moves the world so the given shape stays inside the visible area when possible.
+     */
     public void follow(Shape shape, double margin, double xMin, double xMax, double yMin, double yMax) {
         if (shape == null) {
             return;
@@ -264,6 +330,9 @@ public class World implements IWorld {
         }
     }
 
+    /**
+     * Registers a mouse listener object that implements {@link MouseListener}.
+     */
     public void addMouseListener(Object mouseListener) {
         if (mouseManager == null) {
             return;
@@ -273,11 +342,17 @@ public class World implements IWorld {
         }
     }
 
+    /**
+     * Returns the actor manager used by this world.
+     */
     public ActorManager getActorManager() {
         return actorManager;
     }
 
     @Override
+    /**
+     * Returns true when the world still contains active actors.
+     */
     public boolean hasActors() {
         return actorManager != null && actorManager.hasActors();
     }
@@ -299,6 +374,9 @@ public class World implements IWorld {
         return currentTop + screenY * (currentHeight / sceneHeight);
     }
 
+    /**
+     * Returns all shapes in the world, including shapes inside groups.
+     */
     public List<Shape> getAllShapes() {
         List<Shape> result = new ArrayList<>();
         for (Shape shape : rootShapes) {
@@ -319,6 +397,9 @@ public class World implements IWorld {
         }
     }
 
+    /**
+     * Returns the top-level shapes that are directly attached to the world.
+     */
     public List<Shape> getRootShapes() {
         return Collections.unmodifiableList(rootShapes);
     }

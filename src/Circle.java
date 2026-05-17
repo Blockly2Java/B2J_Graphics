@@ -1,3 +1,6 @@
+/**
+ * A circle centered on a world position.
+ */
 public class Circle extends FilledShape {
     private double radius;
 

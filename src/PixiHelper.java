@@ -1,6 +1,9 @@
 import javafx.scene.Node;
 import javafx.scene.Parent;
 
+/**
+ * Helper functions that force JavaFX nodes to update their CSS and transforms.
+ */
 public class PixiHelper {
     private PixiHelper() {
     }

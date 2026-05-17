@@ -1,3 +1,6 @@
+/**
+ * Converts the flexible color values accepted by the graphics API into RGB integers.
+ */
 public class ColorConverter {
     private ColorConverter() {
     }

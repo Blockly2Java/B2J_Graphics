@@ -1,3 +1,6 @@
+/**
+ * Describes the logical size of a repeating sprite tile.
+ */
 public class TileImage {
     public final double width;
     public final double height;

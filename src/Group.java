@@ -3,6 +3,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * A shape that owns other shapes and moves them together as one unit.
+ */
 public class Group<T extends Shape> extends Shape {
     private final List<Shape> children = new ArrayList<>();
 

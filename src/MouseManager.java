@@ -4,11 +4,21 @@ import java.util.List;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 
+/**
+ * Übersetzt JavaFX-Mausereignisse in Weltkoordinaten und verteilt sie an Listener und Formen.
+ *
+ * <p>Maustastenwerte werden als Ganzzahlen übergeben und folgen der JavaFX-Logik
+ * {@code MouseButton.ordinal()}: 0 = NONE, 1 = PRIMARY (normalerweise links), 2 = MIDDLE,
+ * 3 = SECONDARY (normalerweise rechts). Höhere Werte stehen für zusätzliche Tasten zur Verfügung.</p>
+ */
 public class MouseManager {
     private final World world;
     private final List<MouseListener> javaMouseListeners = new ArrayList<>();
     private final List<Shape> shapesWithMouseMethods = new ArrayList<>();
 
+    /**
+     * Creates a mouse manager for the given world and scene.
+     */
     public MouseManager(World world, Scene scene) {
         this.world = world;
         if (scene != null) {
@@ -24,16 +34,25 @@ public class MouseManager {
         scene.addEventHandler(MouseEvent.MOUSE_EXITED, event -> handleMouseEvent(event, MouseEventKind.LEAVE));
     }
 
+    /**
+     * Adds a listener that receives raw mouse callbacks.
+     */
     public void addMouseListener(MouseListener listener) {
         if (listener != null) {
             javaMouseListeners.add(listener);
         }
     }
 
+    /**
+     * Removes a previously registered mouse listener.
+     */
     public void removeMouseListener(MouseListener listener) {
         javaMouseListeners.remove(listener);
     }
 
+    /**
+     * Beginnt mit der Verfolgung einer Form, wenn sie Maus-Callback-Methoden implementiert.
+     */
     public void registerShape(Shape shape) {
         if (shape == null || shapesWithMouseMethods.contains(shape)) {
             return;
@@ -43,10 +62,16 @@ public class MouseManager {
         }
     }
 
+    /**
+     * Stoppt die Verfolgung von Mauserereignissen für eine Form.
+     */
     public void removeShape(Shape shape) {
         shapesWithMouseMethods.remove(shape);
     }
 
+    /**
+     * Gibt true zurück, wenn Maus-Listener oder mausbereite Formen registriert sind.
+     */
     public boolean hasMouseListeners() {
         return !shapesWithMouseMethods.isEmpty() || !javaMouseListeners.isEmpty();
     }

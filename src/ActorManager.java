@@ -12,6 +12,9 @@ import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 
+/**
+ * Registers actors and dispatches their act and keyboard callbacks.
+ */
 public class ActorManager {
     private final EnumMap<ActorType, List<Actor>> actors = new EnumMap<>(ActorType.class);
     private final Set<String> keysDown = new HashSet<>();
@@ -20,6 +23,9 @@ public class ActorManager {
     private ScheduledFuture<?> actTask;
     private int timerFrequencyHz = 30;
 
+    /**
+     * Creates a manager for one JavaFX scene and starts the act timer.
+     */
     public ActorManager(Scene scene) {
         for (ActorType type : ActorType.values()) {
             actors.put(type, new ArrayList<>());
@@ -54,6 +60,9 @@ public class ActorManager {
         return fallback == null ? "" : fallback;
     }
 
+    /**
+     * Adds an actor to one of the callback groups managed by the world.
+     */
     public void registerActor(Actor actor, ActorType type) {
         if (actor == null || type == null) {
             return;
@@ -61,6 +70,9 @@ public class ActorManager {
         actors.get(type).add(actor);
     }
 
+    /**
+     * Removes an actor from every callback group.
+     */
     public void unregisterActor(Actor actor) {
         if (actor == null) {
             return;
@@ -70,6 +82,9 @@ public class ActorManager {
         }
     }
 
+    /**
+     * Returns true when at least one actor is still registered.
+     */
     public boolean hasActors() {
         for (ActorType type : ActorType.values()) {
             if (!actors.get(type).isEmpty()) {
@@ -79,6 +94,9 @@ public class ActorManager {
         return false;
     }
 
+    /**
+     * Sets how often act callbacks are executed.
+     */
     public final void setTimerFrequency(int frequencyInHz) {
         if (frequencyInHz <= 0) {
             return;
@@ -119,6 +137,9 @@ public class ActorManager {
         }
     }
 
+    /**
+     * Returns true when the given key is currently held down.
+     */
     public boolean isKeyDown(String key) {
         return keysDown.contains(key);
     }
@@ -144,6 +165,9 @@ public class ActorManager {
         }
     }
 
+    /**
+     * Stops the timer and releases the scheduler thread.
+     */
     public void shutdown() {
         if (actTask != null) {
             actTask.cancel(false);

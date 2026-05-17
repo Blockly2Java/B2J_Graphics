@@ -1,3 +1,6 @@
+/**
+ * A rectangle with rounded corners.
+ */
 public class RoundedRectangle extends FilledShape {
     private double radius;
     private double width;

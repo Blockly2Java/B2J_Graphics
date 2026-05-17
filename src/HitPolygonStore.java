@@ -3,6 +3,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Caches simple hit-test polygons for sprite images.
+ */
 public class HitPolygonStore {
     private static final Map<String, List<Shape.Point>> polygonStore = new HashMap<>();
 

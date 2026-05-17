@@ -1,3 +1,6 @@
+/**
+ * Lists the built-in sprite sheets that can be loaded by Sprite.
+ */
 public enum SpriteLibrary {
     Background("Background"),
     Bird("Bird"),

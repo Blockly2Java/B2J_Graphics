@@ -1,9 +1,17 @@
+/**
+ * Base class for objects that react to time and input.
+ *
+ * <p>Subclass this when you want your object to animate itself or receive key events.</p>
+ */
 public abstract class Actor implements IActor {
     private boolean isActing = true;
     private boolean isDestroyed = false;
     private ActorManager actorManager;
     private boolean registrationDone;
 
+    /**
+     * Creates a new actor and registers any overridden callbacks with the current world.
+     */
     protected Actor() {
         ensureRegistration();
     }
@@ -44,22 +52,37 @@ public abstract class Actor implements IActor {
     }
 
     @Override
+    /**
+     * Returns whether the actor is currently allowed to receive act callbacks.
+     */
     public boolean isActing() {
         return isActing;
     }
 
+    /**
+     * Returns whether the actor has already been destroyed.
+     */
     public boolean isDestroyed() {
         return isDestroyed;
     }
 
+    /**
+     * Pauses automatic act callbacks for this actor.
+     */
     public void stopActing() {
         isActing = false;
     }
 
+    /**
+     * Re-enables automatic act callbacks for this actor.
+     */
     public void restartActing() {
         isActing = true;
     }
 
+    /**
+     * Removes the actor from the world and stops it from receiving further callbacks.
+     */
     public void destroy() {
         if (isDestroyed) {
             return;
@@ -70,6 +93,9 @@ public abstract class Actor implements IActor {
         }
     }
 
+    /**
+     * Returns true when the given key is not currently pressed.
+     */
     public boolean isKeyUp(String key) {
         if (actorManager == null) {
             return true;
@@ -77,6 +103,9 @@ public abstract class Actor implements IActor {
         return !actorManager.isKeyDown(key);
     }
 
+    /**
+     * Returns true when the given key is currently pressed.
+     */
     public boolean isKeyDown(String key) {
         if (actorManager == null) {
             return false;
@@ -96,6 +125,9 @@ public abstract class Actor implements IActor {
         return 0.0;
     }
 
+    /**
+     * Changes how often the world calls act methods, measured in frames per second.
+     */
     public static void setActFrequency(int frequencyInHz) {
         World world = World.getWorld();
         ActorManager manager = world.getActorManager();
@@ -105,22 +137,37 @@ public abstract class Actor implements IActor {
     }
 
     @Override
+    /**
+     * Called once per frame for actors that override the frame-based animation hook.
+     */
     public void act() {
     }
 
     @Override
+    /**
+     * Called once per frame for actors that need elapsed time in milliseconds.
+     */
     public void act(double deltaTimeMs) {
     }
 
     @Override
+    /**
+     * Called when the user types a character key.
+     */
     public void onKeyTyped(String key) {
     }
 
     @Override
+    /**
+     * Called when a key is released.
+     */
     public void onKeyUp(String key) {
     }
 
     @Override
+    /**
+     * Called when a key is pressed.
+     */
     public void onKeyDown(String key) {
     }
 }
