@@ -1,3 +1,6 @@
+/**
+ * Listet die eingebauten Spritesheets auf, die von `Sprite` geladen werden können.
+ */
 public enum SpriteLibrary {
     Background("Background"),
     Bird("Bird"),

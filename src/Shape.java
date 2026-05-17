@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class Shape {
+public abstract class Shape extends Actor {
     protected static final class Point {
         final double x;
         final double y;
@@ -52,6 +52,10 @@ public abstract class Shape {
     protected boolean visible = defaultVisibility;
     protected boolean isStatic;
     protected boolean destroyed;
+    protected boolean trackMouseMove;
+    protected boolean reactToMouseEventsWhenInvisible;
+    protected boolean mouseLastSeenInsideObject;
+    private Boolean cachedHasMouseHandlers;
 
     protected Color fillColor;
     protected double fillAlpha = 1.0;
@@ -586,6 +590,7 @@ public abstract class Shape {
         return world == null ? World.getWorld() : world;
     }
 
+    @Override
     public void destroy() {
         if (destroyed) {
             return;
@@ -596,6 +601,105 @@ public abstract class Shape {
         }
         if (world != null) {
             world.deregisterShape(this);
+        }
+        super.destroy();
+    }
+
+    /**
+     * Wird aufgerufen, wenn eine Maustaste über der Form losgelassen wird.
+     *
+     * @param x Welt-X-Koordinate des Ereignisses
+     * @param y Welt-Y-Koordinate des Ereignisses
+     * @param button ganzzahliger Tasten-Code. Verwendet JavaFX MouseButton.ordinal():
+     *               0 = NONE, 1 = PRIMARY (normalerweise links), 2 = MIDDLE, 3 = SECONDARY (normalerweise rechts),
+     *               höhere Werte für zusätzliche Tasten.
+     */
+    public void onMouseUp(double x, double y, int button) {
+    }
+
+    /**
+     * Wird aufgerufen, wenn eine Maustaste über der Form gedrückt wird.
+     *
+     * @param x Welt-X-Koordinate des Ereignisses
+     * @param y Welt-Y-Koordinate des Ereignisses
+     * @param button ganzzahliger Tasten-Code. Verwendet JavaFX MouseButton.ordinal():
+     *               0 = NONE, 1 = PRIMARY (normalerweise links), 2 = MIDDLE, 3 = SECONDARY (normalerweise rechts),
+     *               höhere Werte für zusätzliche Tasten.
+     */
+    public void onMouseDown(double x, double y, int button) {
+    }
+
+    /**
+     * Wird aufgerufen, wenn sich die Maus bewegt. Formen erhalten Bewegungsereignisse,
+     * wenn sich der Zeiger innerhalb der Form befindet oder wenn {@link #trackMouseMove(boolean)}
+     * aktiviert ist.
+     *
+     * @param x Welt-X-Koordinate der Maus
+     * @param y Welt-Y-Koordinate der Maus
+     */
+    public void onMouseMove(double x, double y) {
+    }
+
+    /**
+     * Wird einmal ausgelöst, wenn die Maus den Bereich der Form betritt.
+     *
+     * @param x Welt-X-Koordinate der Maus
+     * @param y Welt-Y-Koordinate der Maus
+     */
+    public void onMouseEnter(double x, double y) {
+    }
+
+    /**
+     * Wird einmal ausgelöst, wenn die Maus den Bereich der Form verlässt.
+     *
+     * @param x Welt-X-Koordinate der Maus
+     * @param y Welt-Y-Koordinate der Maus
+     */
+    public void onMouseLeave(double x, double y) {
+    }
+
+    /**
+     * Aktiviert oder deaktiviert die Verfolgung von Mausbewegungsereignissen,
+     * auch wenn sich der Zeiger nicht strikt innerhalb der Form befindet. Wenn
+     * aktiviert, erhält die Form kontinuierlich {@link #onMouseMove(double,double)}
+     * mit der aktuellen Mausposition.
+     *
+     * @param enabled true, um die kontinuierliche Verfolgung von Mausbewegungen zu aktivieren
+     * @return diese Form zur Verkettung
+     */
+    public Shape trackMouseMove(boolean enabled) {
+        this.trackMouseMove = enabled;
+        return this;
+    }
+
+    /**
+     * Wenn auf true gesetzt, erhält die Form weiterhin Mausereignisse, selbst wenn
+     * sie nicht sichtbar ist. Nützlich für unsichtbare Trefferbereiche.
+     *
+     * @param enabled ob auf Mausereignisse reagiert werden soll, wenn die Form unsichtbar ist
+     * @return diese Form zur Verkettung
+     */
+    public Shape reactToMouseEventsWhenInvisible(boolean enabled) {
+        this.reactToMouseEventsWhenInvisible = enabled;
+        return this;
+    }
+
+    boolean hasMouseHandlers() {
+        if (cachedHasMouseHandlers == null) {
+            cachedHasMouseHandlers = isMouseMethodOverridden("onMouseUp", double.class, double.class, int.class)
+                || isMouseMethodOverridden("onMouseDown", double.class, double.class, int.class)
+                || isMouseMethodOverridden("onMouseMove", double.class, double.class)
+                || isMouseMethodOverridden("onMouseEnter", double.class, double.class)
+                || isMouseMethodOverridden("onMouseLeave", double.class, double.class);
+        }
+        return cachedHasMouseHandlers;
+    }
+
+    private boolean isMouseMethodOverridden(String methodName, Class<?>... paramTypes) {
+        try {
+            return getClass().getMethod(methodName, paramTypes).getDeclaringClass() != Shape.class;
+        } catch (NoSuchMethodException e) {
+            return false;
         }
     }
 

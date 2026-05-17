@@ -1,4 +1,7 @@
-public class Circle extends Shape {
+/**
+ * Ein Kreis, zentriert an einer Welt-Position.
+ */
+public class Circle extends FilledShape {
     private double radius;
 
     public Circle() {

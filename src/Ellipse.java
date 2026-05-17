@@ -1,4 +1,7 @@
-public class Ellipse extends Shape {
+/**
+ * Eine Ellipse, zentriert an einer Welt-Position.
+ */
+public class Ellipse extends FilledShape {
     private double radiusX;
     private double radiusY;
 

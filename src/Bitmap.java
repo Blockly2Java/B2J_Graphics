@@ -1,5 +1,8 @@
 import java.util.Arrays;
 
+/**
+ * Ein zeichnbares Pixel-Raster, das Farb- und Alphawerte explizit speichert.
+ */
 public class Bitmap extends Shape {
     private final int resolutionX;
     private final int resolutionY;

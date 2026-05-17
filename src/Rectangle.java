@@ -1,4 +1,7 @@
-public class Rectangle extends Shape {
+/**
+ * Ein achsenparalleles Rechteck.
+ */
+public class Rectangle extends FilledShape {
     private double width;
     private double height;
 

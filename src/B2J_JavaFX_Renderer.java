@@ -1,20 +1,23 @@
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
- * Handles JavaFX rendering for B2J graphics.
- * Manages JavaFX stages for each World and converts B2J shapes to JavaFX nodes.
+ * Übernimmt das JavaFX-Rendering für B2J-Grafiken.
+ * Verwaltet JavaFX-Stages für jede `World` und wandelt B2J-Formen in JavaFX-Knoten um.
  */
 public class B2J_JavaFX_Renderer {
     
     private static final Map<World, JavaFXWindow> worldWindows = new HashMap<>();
+    private static final Map<Shape, javafx.scene.Node> shapeNodes = new IdentityHashMap<>();
     
     /**
-     * Internal class to hold the JavaFX window for a World
+     * Interne Klasse, die das JavaFX-Fenster für eine `World` hält.
      */
     private static class JavaFXWindow {
         Stage stage;
@@ -38,6 +41,10 @@ public class B2J_JavaFX_Renderer {
             stage.setMinHeight(height);
             stage.setMaxWidth(width);
             stage.setMaxHeight(height);
+            
+            // Exit the application when the window is closed
+            stage.setOnCloseRequest(event -> System.exit(0));
+            
             stage.show();
         }
     }
@@ -46,9 +53,17 @@ public class B2J_JavaFX_Renderer {
      * Create a JavaFX window for a new World
      */
     public static void createWindow(World world, String title, double width, double height, Color backgroundColor) {
+        createWindow(world, title, width, height, backgroundColor, null);
+    }
+
+    public static void createWindow(World world, String title, double width, double height, Color backgroundColor,
+            Consumer<Scene> onReady) {
         Platform.runLater(() -> {
             JavaFXWindow window = new JavaFXWindow(title, width, height, backgroundColor);
             worldWindows.put(world, window);
+            if (onReady != null) {
+                onReady.accept(window.scene);
+            }
         });
     }
     
@@ -75,6 +90,7 @@ public class B2J_JavaFX_Renderer {
             if (window != null && shape.isVisible()) {
                 javafx.scene.Node node = createNodeForShape(shape);
                 if (node != null) {
+                    shapeNodes.put(shape, node);
                     window.root.getChildren().add(node);
                 }
             }
@@ -88,7 +104,7 @@ public class B2J_JavaFX_Renderer {
         Platform.runLater(() -> {
             JavaFXWindow window = worldWindows.get(shape.getWorld());
             if (window != null) {
-                javafx.scene.Node node = createNodeForShape(shape);
+                javafx.scene.Node node = shapeNodes.remove(shape);
                 if (node != null) {
                     window.root.getChildren().remove(node);
                 }
@@ -103,12 +119,14 @@ public class B2J_JavaFX_Renderer {
         Platform.runLater(() -> {
             JavaFXWindow window = worldWindows.get(shape.getWorld());
             if (window != null) {
-                javafx.scene.Node node = createNodeForShape(shape);
-                if (node != null) {
-                    // Remove old node if it exists
-                    window.root.getChildren().remove(node);
-                    // Add updated node
-                    window.root.getChildren().add(node);
+                javafx.scene.Node oldNode = shapeNodes.remove(shape);
+                if (oldNode != null) {
+                    window.root.getChildren().remove(oldNode);
+                }
+                javafx.scene.Node newNode = createNodeForShape(shape);
+                if (newNode != null) {
+                    shapeNodes.put(shape, newNode);
+                    window.root.getChildren().add(newNode);
                 }
             }
         });
@@ -138,6 +156,10 @@ public class B2J_JavaFX_Renderer {
             return createNodeForSector(s);
         } else if (shape instanceof Text s) {
             return createNodeForText(s);
+        } else if (shape instanceof Sprite s) {
+            return createNodeForSprite(s);
+        } else if (shape instanceof Turtle s) {
+            return createNodeForTurtle(s);
         } else if (shape instanceof FilledShape s) {
             return createNodeForFilledShape(s);
         }
@@ -238,6 +260,37 @@ public class B2J_JavaFX_Renderer {
         text.setY(shape.getCenterY());
         text.setText(shape.getText());
         return text;
+    }
+
+    private static javafx.scene.Node createNodeForSprite(Sprite shape) {
+        javafx.scene.image.Image image = shape.getImage();
+        if (image == null) {
+            javafx.scene.shape.Rectangle rect = new javafx.scene.shape.Rectangle();
+            Shape.Bounds bounds = shape.getBounds();
+            rect.setX(bounds.minX);
+            rect.setY(bounds.minY);
+            rect.setWidth(bounds.maxX - bounds.minX);
+            rect.setHeight(bounds.maxY - bounds.minY);
+            rect.setFill(javafx.scene.paint.Color.GRAY);
+            return rect;
+        }
+        javafx.scene.image.ImageView view = new javafx.scene.image.ImageView(image);
+        Shape.Bounds bounds = shape.getBounds();
+        view.setX(bounds.minX);
+        view.setY(bounds.minY);
+        view.setFitWidth(bounds.maxX - bounds.minX);
+        view.setFitHeight(bounds.maxY - bounds.minY);
+        return view;
+    }
+
+    private static javafx.scene.Node createNodeForTurtle(Turtle shape) {
+        javafx.scene.Group group = new javafx.scene.Group();
+        group.getChildren().add(shape.createLineNode());
+        javafx.scene.shape.Polygon turtleNode = shape.createTurtleNode();
+        if (turtleNode != null) {
+            group.getChildren().add(turtleNode);
+        }
+        return group;
     }
     
     private static javafx.scene.shape.Polygon createNodeForFilledShape(FilledShape shape) {

@@ -1,3 +1,6 @@
+/**
+ * Einfaches ganzzahliges Koordinatenpaar, verwendet von Bitmap- und Geometrie-Hilfsmethoden.
+ */
 public class Position {
     public int x;
     public int y;

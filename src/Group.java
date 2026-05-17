@@ -3,6 +3,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Eine Form, die andere Formen besitzt und sie gemeinsam als eine Einheit bewegt.
+ */
 public class Group<T extends Shape> extends Shape {
     private final List<Shape> children = new ArrayList<>();
 

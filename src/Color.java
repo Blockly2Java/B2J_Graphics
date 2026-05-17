@@ -4,6 +4,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
+/**
+ * Repräsentiert eine RGB-Farbe mit einem optionalen Alphawert.
+ *
+ * <p>Die Klasse akzeptiert Farbnamen, Hex-Strings und ganzzahlige RGB-Werte
+ * und bietet Hilfsmethoden zum Konvertieren zwischen den unterstützten Formaten.</p>
+ */
 public class Color {
 	public int red;
 	public int green;

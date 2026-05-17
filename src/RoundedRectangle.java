@@ -1,4 +1,7 @@
-public class RoundedRectangle extends Shape {
+/**
+ * Ein Rechteck mit abgerundeten Ecken.
+ */
+public class RoundedRectangle extends FilledShape {
     private double radius;
     private double width;
     private double height;

@@ -1,4 +1,7 @@
-public class Line extends Shape {
+/**
+ * Ein gerades Liniensegment zwischen zwei Punkten.
+ */
+public class Line extends FilledShape {
     private double x1;
     private double y1;
     private double x2;

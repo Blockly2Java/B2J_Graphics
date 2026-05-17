@@ -4,7 +4,13 @@ import java.util.List;
 
 import javafx.application.Platform;
 
-public class World {
+/**
+ * Repräsentiert die Zeichenfläche, die alle Formen, Actoren und die Maussteuerung besitzt.
+ *
+ * <p>Einsteiger beginnen hier: Erstellen Sie eine Welt, fügen Sie Formen hinzu und
+ * lassen Sie Actoren animieren oder auf Tastatur- und Maus-Eingaben reagieren.</p>
+ */
+public class World implements IWorld {
     static {
         // Ensure JavaFX Toolkit is initialized before any World instance is created.
         // This allows the library to be used as a dependency without requiring
@@ -34,10 +40,20 @@ public class World {
 
     private Group<? extends Shape> defaultGroup;
 
+    private javafx.scene.Scene scene;
+    private ActorManager actorManager;
+    private MouseManager mouseManager;
+
+    /**
+     * Erstellt eine Welt mit der Standardgröße 800x600 Pixel.
+     */
     public World() {
         this(800, 600);
     }
 
+    /**
+     * Erstellt eine Welt mit der angegebenen Größe.
+     */
     public World(double width, double height) {
         this.currentLeft = 0;
         this.currentTop = 0;
@@ -49,12 +65,22 @@ public class World {
     }
     
     /**
-     * Create a JavaFX window for this world
+     * Erstellt ein JavaFX-Fenster für diese Welt.
      */
     private void createJavaFXWindow() {
-        //javafx.application.Platform.runLater(() -> {
-            B2J_JavaFX_Renderer.createWindow(this, "World", currentWidth, currentHeight, backgroundColor);
-        //});
+        B2J_JavaFX_Renderer.createWindow(this, "World", currentWidth, currentHeight, backgroundColor, this::onWindowReady);
+    }
+
+    private void onWindowReady(javafx.scene.Scene createdScene) {
+        this.scene = createdScene;
+        this.actorManager = new ActorManager(createdScene);
+        this.mouseManager = new MouseManager(this, createdScene);
+        for (Shape shape : allShapes) {
+            if (shape != null) {
+                shape.ensureRegistration();
+                mouseManager.registerShape(shape);
+            }
+        }
     }
     
     
@@ -70,6 +96,10 @@ public class World {
         }
         // Add shape to JavaFX rendering
         B2J_JavaFX_Renderer.addShape(shape);
+        shape.ensureRegistration();
+        if (mouseManager != null) {
+            mouseManager.registerShape(shape);
+        }
     }
 
     void unregisterFromDefaultList(Shape shape) {
@@ -81,8 +111,14 @@ public class World {
         allShapes.remove(shape);
         // Remove shape from JavaFX rendering
         B2J_JavaFX_Renderer.removeShape(shape);
+        if (mouseManager != null) {
+            mouseManager.removeShape(shape);
+        }
     }
 
+    /**
+     * Liefert die aktuelle Welt und erstellt ggf. eine Standardwelt, falls keine existiert.
+     */
     public static World getWorld() {
         if (currentWorld == null) {
             currentWorld = new World(800, 600);
@@ -90,6 +126,9 @@ public class World {
         return currentWorld;
     }
 
+    /**
+     * Entfernt alle Root-Formen aus der aktuellen Welt.
+     */
     public static void clear() {
         if (currentWorld == null) {
             return;
@@ -121,40 +160,71 @@ public class World {
         }
     }
 
+    @Override
+    /**
+     * Gibt die aktuelle Breite der Welt zurück.
+     */
     public double getWidth() {
         return Math.round(currentWidth);
     }
 
+    @Override
+    /**
+     * Gibt die aktuelle Höhe der Welt zurück.
+     */
     public double getHeight() {
         return Math.round(currentHeight);
     }
 
+    @Override
+    /**
+     * Gibt die obere Kante des aktiven Koordinatensystems zurück.
+     */
     public double getTop() {
         return Math.round(currentTop);
     }
 
+    @Override
+    /**
+     * Gibt die linke Kante des aktiven Koordinatensystems zurück.
+     */
     public double getLeft() {
         return Math.round(currentLeft);
     }
 
+    /**
+     * Gibt die Gruppe zurück, an die neue Formen standardmäßig angehängt werden, falls gesetzt.
+     */
     public Group<? extends Shape> getDefaultGroup() {
         return defaultGroup;
     }
 
+    /**
+     * Setzt die Standardgruppe für neu erstellte Formen.
+     */
     public void setDefaultGroup(Group<? extends Shape> defaultGroup) {
         this.defaultGroup = defaultGroup;
     }
 
+    /**
+     * Ändert die Hintergrundfarbe der Welt.
+     */
     public void setBackgroundColor(Color color) {
         if (color != null) {
             backgroundColor = new Color(color.red, color.green, color.blue, color.alpha);
         }
     }
 
+    /**
+     * Ändert die Hintergrundfarbe anhand eines RGB-Integerwerts.
+     */
     public void setBackgroundColor(int color) {
         backgroundColor = Color.fromInt(color);
     }
 
+    /**
+     * Ändert die Hintergrundfarbe mithilfe eines Farb-Strings wie "#ffcc00" oder "red".
+     */
     public void setBackgroundColor(String color) {
         Color parsed = Color.parse(color);
         if (parsed != null) {
@@ -162,19 +232,31 @@ public class World {
         }
     }
 
+    /**
+     * Liefert eine Kopie der aktuellen Hintergrundfarbe.
+     */
     public Color getBackgroundColor() {
         return new Color(backgroundColor.red, backgroundColor.green, backgroundColor.blue, backgroundColor.alpha);
     }
 
+    /**
+     * Verschiebt das sichtbare Koordinatensystem um den angegebenen Versatz.
+     */
     public void move(double dx, double dy) {
         currentLeft += dx;
         currentTop += dy;
     }
 
+    /**
+     * Dreht das Welt-Koordinatensystem um den angegebenen Punkt.
+     */
     public void rotate(double angleInDeg, double centerX, double centerY) {
         worldRotationDeg = (worldRotationDeg + angleInDeg) % 360.0;
     }
 
+    /**
+     * Skaliert das Welt-Koordinatensystem um den angegebenen Punkt.
+     */
     public void scale(double factor, double centerX, double centerY) {
         if (factor == 0) {
             return;
@@ -185,10 +267,16 @@ public class World {
         currentHeight = currentHeight / factor;
     }
 
+    /**
+     * Spiegelt die Y-Achse, sodass die Weltkoordinaten nach oben ansteigen statt nach unten.
+     */
     public void flipY() {
         flippedY = !flippedY;
     }
 
+    /**
+     * Ersetzt das aktuelle Koordinatensystem durch ein neues Rechteck.
+     */
     public void setCoordinateSystem(double left, double top, double width, double height) {
         currentLeft = left;
         currentTop = top;
@@ -196,9 +284,17 @@ public class World {
         currentHeight = height;
     }
 
+    @Override
     public void setCursor(String cursor) {
+        if (scene != null) {
+            javafx.scene.Cursor fxCursor = javafx.scene.Cursor.cursor(cursor);
+            scene.setCursor(fxCursor);
+        }
     }
 
+    /**
+     * Verschiebt die Welt so, dass die angegebene Form nach Möglichkeit im sichtbaren Bereich bleibt.
+     */
     public void follow(Shape shape, double margin, double xMin, double xMax, double yMin, double yMax) {
         if (shape == null) {
             return;
@@ -234,9 +330,53 @@ public class World {
         }
     }
 
+    /**
+     * Registriert ein Maus-Listener-Objekt, das {@link MouseListener} implementiert.
+     */
     public void addMouseListener(Object mouseListener) {
+        if (mouseManager == null) {
+            return;
+        }
+        if (mouseListener instanceof MouseListener) {
+            mouseManager.addMouseListener((MouseListener) mouseListener);
+        }
     }
 
+    /**
+     * Gibt den ActorManager zurück, der von dieser Welt verwendet wird.
+     */
+    public ActorManager getActorManager() {
+        return actorManager;
+    }
+
+    @Override
+    /**
+     * Gibt true zurück, wenn die Welt noch aktive Actoren enthält.
+     */
+    public boolean hasActors() {
+        return actorManager != null && actorManager.hasActors();
+    }
+
+    double screenToWorldX(double screenX, double sceneWidth) {
+        if (sceneWidth <= 0) {
+            return currentLeft + screenX;
+        }
+        return currentLeft + screenX * (currentWidth / sceneWidth);
+    }
+
+    double screenToWorldY(double screenY, double sceneHeight) {
+        if (sceneHeight <= 0) {
+            return currentTop + screenY;
+        }
+        if (flippedY) {
+            return currentTop + currentHeight - screenY * (currentHeight / sceneHeight);
+        }
+        return currentTop + screenY * (currentHeight / sceneHeight);
+    }
+
+    /**
+     * Gibt alle Formen in der Welt zurück, einschließlich Formen innerhalb von Gruppen.
+     */
     public List<Shape> getAllShapes() {
         List<Shape> result = new ArrayList<>();
         for (Shape shape : rootShapes) {
@@ -257,6 +397,9 @@ public class World {
         }
     }
 
+    /**
+     * Gibt die obersten Formen zurück, die direkt an die Welt angehängt sind.
+     */
     public List<Shape> getRootShapes() {
         return Collections.unmodifiableList(rootShapes);
     }

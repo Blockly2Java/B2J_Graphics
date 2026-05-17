@@ -13,6 +13,9 @@ Add the following dependency to you `pom.xml`
 ```
 ## UML
 ### Class Diagram
+
+**Disclaimer:** This diagram is AI generated from Source Code and may contain mistakes. It is displayed primarily for a rough orientation. Stick to the suggestions and autocomplete of your IDE to be 100% sure, which elements are available.
+
 ```mermaid
 ---
   config:
@@ -21,331 +24,402 @@ Add the following dependency to you `pom.xml`
       hidePrivateMembers: true
 ---
 classDiagram
+class Color {
+    + int red
+    + int green
+    + int blue
+    + double alpha
+    + Color()
+    + Color(int red, int green, int blue)
+    + Color(int red, int green, int blue, double alpha)
+    + int getRed()
+    + int getGreen()
+    + int getBlue()
+    + double getAlpha()
+    + int toInt()
+}
 
-    class Shape {
-        <<Abstract>>
+class Position {
+    + int x
+    + int y
+    + Position(int x, int y)
+}
 
-        + Color getFillColor()
-        + int getFillColorAsInt()
-        + Color getBorderColor()
-        + int getBorderColorAsInt()
-        + double getBorderWidth()
-        + double getAlpha()
-        + boolean isVisible()
-        + boolean isStatic()
-        + double getCenterX()
-        + double getCenterY()
-        + double getAngle()
-        + Shape getFirstCollidingShape()
-        + List<Shape> getCollidingShapes(Group<? extends Shape> group)
-        + World getWorld()
+class TileImage {
+    + double width
+    + double height
+    + double gapX
+    + double gapY
+    + TileImage(double width, double height, double gapX, double gapY)
+}
 
-        + Shape setFillColor(Color|String|int color)
-        + Shape setFillColor(Color|String|int color, double alpha)
-        + Shape setBorderColor(Color|String|int color)
-        + Shape setBorderColor(Color|String|int color, double alpha)
-        + Shape setBorderWidth(double width)
-        + Shape setAlpha(double alpha)
-        + Shape setVisible(boolean visible)
-        + Shape setStatic(boolean isStatic)
-        + Shape setX(double x)
-        + Shape setY(double y)
-        + Shape setScale(double newScale)
-        + Shape setAngle(double newAngle)
-        + Shape tint(Color|String|int color)
+class Shape {
+    <<Abstract>>
 
-        + Shape bringToFront()
-        + Shape sendToBack()
-        + Shape move(double dx, double dy)
-        + Shape moveTo(double x, double y)
-        + Shape rotate(double angleDeg)
-        + Shape rotate(double angleDeg, double pivotX, double pivotY)
-        + Shape scale(double factor)
-        + Shape scale(double factor, double pivotX, double pivotY)
-        + Shape mirrorX()
-        + Shape mirrorY()
-        %% + Shape defineDirection(double angleDeg)
-        + Shape forward(double distance)
-        + boolean containsPoint(double x, double y)
-        + boolean isOutsideView()
-        + Direction directionRelativeTo(Shape other)
-        + Shape moveBackFrom(Shape other, boolean keepColliding)
-        + boolean collidesWith(Shape other)
-        + boolean collidesWithAnyShape()
-        + void destroy()
-        %% + Shape defineCenter(double x, double y)
-        %% + Shape defineCenterRelative(double relX, double relY)
-        %% # Bounds getBounds()
-        %% # List<Point> getLocalPoints()
-        %% # List<Point> getTransformedPoints()
-        %% # Point transformPoint(Point local)
-        %% # Point inverseTransformPoint(double x, double y)
-    }
-    class Group {
-        + Group()
-        + Group(Shape... shapes)
+    + Color getFillColor()
+    + int getFillColorAsInt()
+    + Color getBorderColor()
+    + int getBorderColorAsInt()
+    + double getBorderWidth()
+    + double getAlpha()
+    + boolean isVisible()
+    + boolean isStatic()
+    + double getCenterX()
+    + double getCenterY()
+    + double getAngle()
+    + World getWorld()
 
-        + T get(int index)
-        + int indexOf(Shape shape)
-        + int size()
-        + List<Shape> getChildren()
-        + List<Shape> getCollidingShapes(Shape other)
+    + Shape setFillColor(Color|String|int color)
+    + Shape setFillColor(Color|String|int color, double alpha)
+    + Shape setBorderColor(Color|String|int color)
+    + Shape setBorderColor(Color|String|int color, double alpha)
+    + Shape setBorderWidth(double width)
+    + Shape setAlpha(double alpha)
+    + Shape setVisible(boolean visible)
+    + Shape setStatic(boolean isStatic)
+    + Shape setX(double x)
+    + Shape setY(double y)
+    + Shape setScale(double newScale)
+    + Shape setAngle(double newAngle)
+    + Shape tint(Color|String|int color)
 
-        + Shape move(double dx, double dy)
-        + void add(Shape... shapes)
-        + void remove(Shape shape)
-        + void remove(int index)
-        + void empty()
-        + void destroyAllChildren()
-        %% + Group<T> copy()
-        + boolean containsPoint(double x, double y)
-        + boolean collidesWith(Shape other)
-        %% # Bounds getBounds()
-        %%void bringChildToFront(Shape child)
-        %%void sendChildToBack(Shape child)
-        %% - boolean containsRecursively(Shape shape)
-        %% - void addInternal(Shape shape)
-        %% - void updateCenterFromChildren()
-        %% + String toString() 
-    }
-    class World {
-        + World()
-        + World(double width, double height)
-        %%void registerShape(Shape shape) 
-        %%void unregisterFromDefaultList(Shape shape) 
-        %%void deregisterShape(Shape shape) 
-        %%void bringToFront(Shape shape) 
-        %%void sendToBack(Shape shape)
+    + Shape bringToFront()
+    + Shape sendToBack()
+    + Shape move(double dx, double dy)
+    + Shape moveTo(double x, double y)
+    + Shape rotate(double angleDeg)
+    + Shape rotate(double angleDeg, double pivotX, double pivotY)
+    + Shape scale(double factor)
+    + Shape scale(double factor, double pivotX, double pivotY)
+    + Shape mirrorX()
+    + Shape mirrorY()
+    + Shape forward(double distance)
+    + boolean containsPoint(double x, double y)
+    + boolean isOutsideView()
+    + Direction directionRelativeTo(Shape other)
+    + Shape moveBackFrom(Shape other, boolean keepColliding)
+    + boolean collidesWith(Shape other)
+    + boolean collidesWithAnyShape()
+    + void destroy()
+}
 
-        + double getWidth()
-        + double getHeight()
-        + double getTop()
-        + double getLeft()
-        + Group<? extends Shape> getDefaultGroup()
-        + Color getBackgroundColor()
-        + List<Shape> getAllShapes()
-        %% - void collectShapes(Shape shape, List<Shape> target)
-        + List<Shape> getRootShapes()
+class FilledShape {
+    <<Abstract>>
 
-        + void setDefaultGroup(Group<? extends Shape> defaultGroup)
-        + void setBackgroundColor(Color|String|int color)
-        + void setCoordinateSystem(double left, double top, double width, double height)
-        + void setCursor(String cursor)
+    + FilledShape setFillColor(Color|String|int color)
+    + FilledShape setFillColor(Color|String|int color, double alpha)
+    + FilledShape setBorderColor(Color|String|int color)
+    + FilledShape setBorderColor(Color|String|int color, double alpha)
+    + FilledShape setBorderWidth(double width)
+    + FilledShape setAlpha(double alpha)
+    + static void setDefaultFillColor(String color)
+    + static void setDefaultFillColor(int color, double alpha)
+    + static void setDefaultFillColor(int color)
+    + static void setDefaultBorder(double width, String color)
+    + static void setDefaultBorder(double width, int color, double alpha)
+}
 
-        + void move(double dx, double dy)
-        + void rotate(double angleInDeg, double centerX, double centerY)
-        + void scale(double factor, double centerX, double centerY)
-        + void flipY()
-        + void follow(Shape shape, double margin, double xMin, double xMax, double yMin, double yMax)
-        + void addMouseListener(Object mouseListener)
-    }
-    class Circle {
-        + Circle()
-        + Circle(double x, double y, double r)
+class Group {
+    + Group()
+    + Group(Shape... shapes)
+    + T get(int index)
+    + int indexOf(Shape shape)
+    + int size()
+    + List<Shape> getChildren()
+    + List<Shape> getCollidingShapes(Shape other)
+    + Shape move(double dx, double dy)
+    + void add(Shape... shapes)
+    + void remove(Shape shape)
+    + void remove(int index)
+    + void empty()
+    + void destroyAllChildren()
+    + boolean containsPoint(double x, double y)
+    + boolean collidesWith(Shape other)
+}
 
-        + double getRadius()
+class World {
+    + World()
+    + World(double width, double height)
+    + static World getWorld()
+    + static void clear()
+    + double getWidth()
+    + double getHeight()
+    + double getTop()
+    + double getLeft()
+    + Group<? extends Shape> getDefaultGroup()
+    + Color getBackgroundColor()
+    + List<Shape> getAllShapes()
+    + List<Shape> getRootShapes()
+    + void setDefaultGroup(Group<? extends Shape> defaultGroup)
+    + void setBackgroundColor(Color|String|int color)
+    + void setCoordinateSystem(double left, double top, double width, double height)
+    + void setCursor(String cursor)
+    + void move(double dx, double dy)
+    + void rotate(double angleInDeg, double centerX, double centerY)
+    + void scale(double factor, double centerX, double centerY)
+    + void flipY()
+    + void follow(Shape shape, double margin, double xMin, double xMax, double yMin, double yMax)
+    + void addMouseListener(Object mouseListener)
+}
 
-        + Circle setRadius(double radius)
+class Circle {
+    + Circle()
+    + Circle(double x, double y, double r)
+    + double getRadius()
+    + Circle setRadius(double radius)
+    + boolean containsPoint(double x, double y)
+}
 
-        %% + Circle copy()
-        + boolean containsPoint(double x, double y)
-        %% # Bounds getBounds()
-        %% + String toString()
-    }
-    class Rectangle {
-        + Rectangle()
-        + Rectangle(double left, double top, double width, double height)
+class Rectangle {
+    + Rectangle()
+    + Rectangle(double left, double top, double width, double height)
+    + double getWidth()
+    + double getHeight()
+    + Rectangle setWidth(double width)
+    + Rectangle setHeight(double height)
+    + Rectangle moveTo(double x, double y)
+    + boolean containsPoint(double x, double y)
+}
 
-        + double getWidth()
-        + double getHeight()
+class RoundedRectangle {
+    + RoundedRectangle()
+    + RoundedRectangle(double left, double top, double width, double height, double radius)
+    + double getWidth()
+    + double getHeight()
+    + double getRadius()
+    + RoundedRectangle setWidth(double width)
+    + RoundedRectangle setHeight(double height)
+    + RoundedRectangle setRadius(double radius)
+    + RoundedRectangle moveTo(double x, double y)
+    + boolean containsPoint(double x, double y)
+}
 
-        + Rectangle setWidth(double width)
-        + Rectangle setHeight(double height)
+class Ellipse {
+    + Ellipse()
+    + Ellipse(double x, double y, double rX, double rY)
+    + double getRadiusX()
+    + double getRadiusY()
+    + Ellipse setRadiusX(double radiusX)
+    + Ellipse setRadiusY(double radiusY)
+}
 
-        + Rectangle moveTo(double x, double y)
-        %% + Rectangle copy()
-        %% # java.util.List<Point> getLocalPoints()
-        + boolean containsPoint(double x, double y)
-        %% + String toString()
-        %% - double getLeft()
-        %% - double getTop()
-    }
-    class Triangle {
-        + Triangle()
-        + Triangle(double x1, double y1, double x2, double y2, double x3, double y3)
+class Triangle {
+    + Triangle()
+    + Triangle(double x1, double y1, double x2, double y2, double x3, double y3)
+    + Triangle setPoints(double x1, double y1, double x2, double y2, double x3, double y3)
+    + boolean containsPoint(double x, double y)
+}
 
-        + Triangle setPoints(double x1, double y1, double x2, double y2, double x3, double y3)
+class Polygon {
+    + Polygon()
+    + Polygon(boolean closeAndFill)
+    + Polygon(boolean closeAndFill, double... coordinates)
+    + Polygon(Shape shape)
+    + void setPoints(double[] points)
+    + void addPoint(double x, double y)
+    + void addPoints(double[] points)
+    + void insertPoint(double x, double y, int index)
+    + void open()
+    + void close()
+    + boolean containsPoint(double x, double y)
+}
 
-        %% + Triangle copy()
-        %% # java.util.List<Point> getLocalPoints()
-        + boolean containsPoint(double x, double y)
-        %% + String toString()
-        %% - void setLocalPointsFromWorld(double wx1, double wy1, double wx2, double wy2, double wx3, double wy3)
-    }
-    class Polygon {
-        + Polygon()
-        + Polygon(boolean closeAndFill)
-        + Polygon(boolean closeAndFill, double... coordinates)
-        + Polygon(Shape shape)
+class Line {
+    + Line()
+    + Line(double x1, double y1, double x2, double y2)
+    + Line setPoints(double x1, double y1, double x2, double y2)
+    + boolean containsPoint(double x, double y)
+}
 
-        + void setPoints(double[] points)
+class Text {
+    + Text()
+    + Text(double x, double y, double fontSize, String|double text)
+    + Text(double x, double y, double fontSize, String|double text, String fontFamily)
+    + double getFontsize()
+    + String getText()
+    + double getWidth()
+    + double getHeight()
+    + void setFontsize(double fontsize)
+    + void setText(String|double text)
+    + void setAlignment(Alignment alignment)
+    + void setStyle(boolean bold, boolean italic)
+    + Text moveTo(double x, double y)
+}
 
-        + void addPoint(double x, double y)
-        + void addPoints(double[] points)
-        + void insertPoint(double x, double y, int index)
-        + void open()
-        + void close()
-        + boolean containsPoint(double x, double y)
-        %% # List<Point> getLocalPoints()
-        %% + Polygon copy()
-        %% + String toString()
-        %% # void setPointsInternal(double[] coordinates)
-        %% - boolean pointInPolygon(double x, double y)
-        %% - double distanceToPolyline(double x, double y)
-        %% - double distancePointToSegment(double px, double py, double ax, double ay, double bx, double by)
-    }
-    class Line {
-        + Line()
-        + Line(double x1, double y1, double x2, double y2)
+class Arc {
+    + Arc()
+    + Arc(double mx, double my, double innerRadius, double outerRadius, double startAngle, double endAngle)
+    + double getInnerRadiusX()
+    + double getOuterRadiusX()
+    + double getStartAngleX()
+    + double getEndAngleX()
+    + void setInnerRadius(double innerRadius)
+    + void setOuterRadius(double outerRadius)
+    + void setStartAngle(double startAngle)
+    + void setEndAngle(double endAngle)
+    + boolean containsPoint(double x, double y)
+}
 
-        + Line setPoints(double x1, double y1, double x2, double y2)
+class Sector {
+    + Sector()
+    + Sector(double mx, double my, double radius, double startAngle, double endAngle)
+    + double getRadiusX()
+    + double getStartAngleX()
+    + double getEndAngleX()
+    + void setRadius(double radius)
+    + void setStartAngle(double startAngle)
+    + void setEndAngle(double endAngle)
+    + void drawRadii(boolean drawRadii)
+    + boolean containsPoint(double x, double y)
+}
 
-        %% + Line copy()
-        %% # java.util.List<Point> getLocalPoints()
-        + boolean containsPoint(double x, double y)
-        %% + String toString()
-        %% - void setLocalPointsFromWorld(double wx1, double wy1, double wx2, double wy2)
-    }
-    class FilledShape {
-        <<Abstract>>
+class Bitmap {
+    + Bitmap(int resolutionX, int resolutionY, double left, double top, double displayWidth, double displayHeight)
+    + int getResolutionX()
+    + int getResolutionY()
+    + void setColor(int x, int y, int color)
+    + void setColor(int x, int y, int color, double alpha)
+    + void setColor(int x, int y, String color)
+    + void setColor(int x, int y, String color, double alpha)
+    + Color getColor(int x, int y)
+    + int getColorAsInt(int x, int y)
+    + double getAlpha(int x, int y)
+    + boolean isColor(int x, int y, String color)
+    + boolean isColor(int x, int y, int color)
+    + Position screenCoordinatesToBitmapCoordinates(double x, double y)
+    + void fillAll(int color, double alpha)
+    + void fillAll(String color, double alpha)
+    + void downloadAsPngFile(String filename)
+}
 
-        %% # FilledShape()
-        %% # FilledShape(double x, double y)
-        
-        + FilledShape setFillColor(Color|String|int color)
-        + FilledShape setFillColor(Color|String|int color, double alpha)
-        + FilledShape setBorderColor(Color|String|int color)
-        + FilledShape setBorderColor(Color|String|int color, double alpha)
+class Sprite {
+    + Sprite(double x, double y, SpriteLibrary spriteLibrary, int index, ScaleMode scaleMode)
+    + Sprite(double x, double y, SpriteLibrary spriteLibrary, int index)
+    + Sprite(double x, double y, SpriteLibrary spriteLibrary)
+    + Sprite(Shape shape, ScaleMode scaleMode)
+    + Sprite(Shape shape)
+    + void setImage(SpriteLibrary spriteLibrary, int imageIndex)
+    + void setImageIndex(int imageIndex)
+    + void playAnimation(int[] imageIndexArray, RepeatType repeatType, int imagesPerSecond)
+    + void playAnimation(int fromIndex, int toIndex, RepeatType repeatType, int imagesPerSecond)
+    + void stopAnimation()
+    + void pauseAnimation()
+    + void resumeAnimation()
+    + void setAsBackgroundImage()
+    + double getWidth()
+    + double getHeight()
+    + int getImageIndex()
+    + void makeTiling(double width, double height)
+    + void makeTiling(double width, double height, double gapX, double gapY)
+    + TileImage getTileImage()
+    + int getPixelColor(int x, int y)
+    + double getPixelAlpha(int x, int y)
+    + Image getImage()
+}
 
-        + FilledShape setBorderWidth(double width)
-        + FilledShape setAlpha(double alpha)
-    }
-    class Text {
-        + Text()
-        + Text(double x, double y, double fontSize, String|double text)
-        + Text(double x, double y, double fontSize, String|double text, String fontFamily)
+class Turtle {
+    + Turtle()
+    + Turtle(double x, double y)
+    + Turtle(double x, double y, boolean showTurtle)
+    + Turtle forward(double length)
+    + void turn(double angleInDeg)
+    + void penUp()
+    + void penDown()
+    + void closeAndFill(boolean closeAndFill)
+    + void showTurtle(boolean show)
+    + void clear()
+    + double getLastSegmentLength()
+    + double getTurtleAngle()
+    + Turtle moveTo(double x, double y)
+}
 
-        + double getFontsize()
-        + String getText()
-        + double getWidth()
-        + double getHeight()
+class JavaKaraWorld {
+    + JavaKaraWorld(int sizeX, int sizeY)
+    + int getSizeX()
+    + int getSizeY()
+    + void clearAll()
+    + void setLeaf(int x, int y)
+    + void setTree(int x, int y)
+    + void setMushroom(int x, int y)
+    + void setOrRemoveLeaf(int x, int y)
+    + void setOrRemoveTree(int x, int y)
+    + void setOrRemoveMushroom(int x, int y)
+    + boolean isEmpty(int x, int y)
+    + void init(String s)
+    + boolean isTree(int direction, DirectionDelta delta, int x, int y)
+    + boolean isLeaf(int direction, DirectionDelta delta, int x, int y)
+    + boolean isMushroom(int direction, DirectionDelta delta, int x, int y)
+    + void moveMushroom(int fromX, int fromY, int toX, int toY)
+}
 
-        + void setFontsize(double fontsize)
-        + void setText(String|double text)
-        + void setAlignment(Alignment alignment)
-        + void setStyle(boolean bold, boolean italic)
+class DirectionDelta {
+    <<enumeration>>
+}
 
-        + Text moveTo(double x, double y)
-        %% + Text copy()
-        %% # Bounds getBounds()
-        %% + String toString()
-        %% - void recalcBounds()
-    }
-    class Arc {
-        + Arc()
-        + Arc(double mx, double my, double innerRadius, double outerRadius, double startAngle, double endAngle)
+class JavaHamsterWorld {
+    + JavaHamsterWorld(int width, int height)
+    + int getBreite()
+    + int getHoehe()
+    + void loescheAlles()
+    + void setzeMauer(int x, int y)
+    + void setzeGetreide(int x, int y, int anzahl)
+    + void init(String worldAsString)
+    + Shape scale(double factor)
+}
 
-        + double getInnerRadiusX()
-        + double getOuterRadiusX()
-        + double getStartAngleX()
-        + double getEndAngleX()
+class Alignment {
+    <<enumeration>>
+}
 
-        + void setInnerRadius(double innerRadius)
-        + void setOuterRadius(double outerRadius)
-        + void setStartAngle(double startAngle)
-        + void setEndAngle(double endAngle)
+class Direction {
+    <<enumeration>>
+}
 
-        + boolean containsPoint(double x, double y)
-        %% # Bounds getBounds()
-        %% + Arc copy()
-        %% + String toString()
-    }
-    class Ellipse {
-        + Ellipse()
-        + Ellipse(double x, double y, double rX, double rY)
+class RepeatType {
+    <<enumeration>>
+}
 
-        + double getRadiusX()
-        + double getRadiusY()
+class ScaleMode {
+    <<enumeration>>
+}
 
-        + Ellipse setRadiusX(double radiusX)
-        + Ellipse setRadiusY(double radiusY)
+class SpriteLibrary {
+    <<enumeration>>
+    + String getName()
+    + static SpriteLibrary fromName(String name)
+}
 
-        %% + Ellipse copy()
-        %% # Bounds getBounds()
-        %% # java.util.List<Point> getLocalPoints()
-        %% + String toString()
-    }
-    class Sector {
-        + Sector()
-        + Sector(double mx, double my, double radius, double startAngle, double endAngle)
+Shape <|-- FilledShape
+Shape <|-- Group
+Shape <|-- Bitmap
+Shape <|-- Sprite
 
-        + double getRadiusX()
-        + double getStartAngleX()
-        + double getEndAngleX()
+FilledShape <|-- Circle
+FilledShape <|-- Rectangle
+FilledShape <|-- RoundedRectangle
+FilledShape <|-- Ellipse
+FilledShape <|-- Polygon
+FilledShape <|-- Line
+FilledShape <|-- Text
+FilledShape <|-- Arc
+FilledShape <|-- Sector
+FilledShape <|-- Turtle
+FilledShape <|-- JavaKaraWorld
+FilledShape <|-- JavaHamsterWorld
 
-        + void setRadius(double radius)
-        + void setStartAngle(double startAngle)
-        + void setEndAngle(double endAngle)
-        + void drawRadii(boolean drawRadii)
+Polygon <|-- Triangle
 
-        + boolean containsPoint(double x, double y)
-        %% # Bounds getBounds()
-        %% + Sector copy()
-        %% + String toString()
-        %% - boolean angleWithin(double angle, double start, double end)
-    }
-    class RoundedRectangle {
-        + RoundedRectangle()
-        + RoundedRectangle(double left, double top, double width, double height, double radius)
-
-        + double getWidth()
-        + double getHeight()
-        + double getRadius()
-
-        + RoundedRectangle setWidth(double width)
-        + RoundedRectangle setHeight(double height)
-        + RoundedRectangle setRadius(double radius)
-
-        + RoundedRectangle moveTo(double x, double y)
-        %% + RoundedRectangle copy()
-        %% # java.util.List<Point> getLocalPoints()
-        + boolean containsPoint(double x, double y)
-        %% + String toString()
-        %% - double getLeft()
-        %% - double getTop()
-    }
-    
-    Shape <|-- Circle
-    Shape <|-- Rectangle
-    Shape <|-- Triangle
-    Shape <|-- FilledShape
-    Shape <|-- Line
-    Shape <|-- Ellipse
-    Shape <|-- RoundedRectangle
-    Shape <|-- Group
-    FilledShape <|-- Polygon
-    FilledShape <|-- Text
-    FilledShape <|-- Arc
-    FilledShape <|-- Sector
-
-    Group "m" --> "n" Shape : children
-    World "1" --> "n" Shape : allShapes
+Group "m" --> "n" Shape : children
+World "1" --> "0..1" Group : defaultGroup
+Sprite --> SpriteLibrary
+Sprite --> ScaleMode
+Sprite --> RepeatType
+Sprite --> TileImage
+Bitmap --> Position
+Bitmap --> Color
+Shape --> Color
+Text --> Alignment
+JavaKaraWorld --> DirectionDelta
 ```
-This diagram shows the public API for using the graphics library:
-- **Shape**: Base class for all shapes with common transformation and rendering methods
-- **FilledShape**: Helper class for shapes with fill colors (provides default setters) 
-- **Group**: Container for organizing multiple shapes (extends Shape)
-- **World**: Manages the game world and all shapes
-- **Concrete Shape Classes**: Circle, Rectangle, Triangle, Polygon, Line, Text, Arc, Ellipse, Sector, RoundedRectangle, TileImage
-- **Abstract Shape Classes**: Shape, FilledShape, Group
+This diagram focuses on the public API that consumers are expected to use. Internal renderer helpers, package-private methods, and other implementation details are intentionally omitted.
 ```

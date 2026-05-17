@@ -1,3 +1,6 @@
+/**
+ * Ein kreisförmiger Bogen oder Ringsegment.
+ */
 public class Arc extends FilledShape {
     private double innerRadius;
     private double outerRadius;
