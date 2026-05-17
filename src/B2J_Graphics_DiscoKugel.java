@@ -1,18 +1,18 @@
 /**
- * Demo shape that grows and shrinks while reacting to keyboard and mouse input.
+ * Demo-Form, die beim Animieren wächst und schrumpft und auf Tastatur- sowie Maus-Eingaben reagiert.
  */
 public class B2J_Graphics_DiscoKugel extends Circle { 
    private double dr = 10;
 
    /**
-    * Creates the demo disc at the given position.
+    * Erstellt die Demo-Scheibe an der angegebenen Position.
     */
    public B2J_Graphics_DiscoKugel(double x, double y) {
       super(x, y, Math.random() * 500);
    }
 
    /**
-    * Animates the disc radius and changes its color every frame.
+    * Animiert den Radius der Scheibe und ändert jede Frame ihre Farbe.
     */
    @Override
    public void act() {

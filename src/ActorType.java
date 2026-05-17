@@ -1,5 +1,5 @@
 /**
- * Groups actors by the kind of callbacks they provide.
+ * Gruppiert Actor nach der Art der bereitgestellten Callback-Methoden.
  */
 public enum ActorType {
     ACT,

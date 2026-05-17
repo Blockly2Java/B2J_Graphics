@@ -1,5 +1,5 @@
 /**
- * Grid-based world used by the Kara examples.
+ * Gitterbasierte Welt, die in den Kara-Beispielen verwendet wird.
  */
 public class JavaKaraWorld extends FilledShape {
     public static final int NORTH = 0;

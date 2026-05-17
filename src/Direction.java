@@ -1,5 +1,5 @@
 /**
- * Cardinal directions used by some of the educational examples.
+ * Kardinalrichtungen, die in einigen Bildungsbeispielen verwendet werden.
  */
 public enum Direction {
     top,

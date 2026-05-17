@@ -1,5 +1,5 @@
 /**
- * Represents the Hamster agent used in the hamster world examples.
+ * Repräsentiert den Hamster-Agenten, der in den Hamster-Welt-Beispielen verwendet wird.
  */
 public class Hamster {
     public static final int NORD = 0;

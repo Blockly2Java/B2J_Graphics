@@ -1,5 +1,5 @@
 /**
- * Converts the flexible color values accepted by the graphics API into RGB integers.
+ * Konvertiert die flexiblen Farbwerte, die von der Grafik-API akzeptiert werden, in RGB-Ganzzahlen.
  */
 public class ColorConverter {
     private ColorConverter() {

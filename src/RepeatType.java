@@ -1,5 +1,5 @@
 /**
- * Controls how sprite animations repeat.
+ * Steuert, wie sich Sprite-Animationen wiederholen.
  */
 public enum RepeatType {
     once,

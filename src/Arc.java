@@ -1,5 +1,5 @@
 /**
- * A circular arc or ring segment.
+ * Ein kreisförmiger Bogen oder Ringsegment.
  */
 public class Arc extends FilledShape {
     private double innerRadius;

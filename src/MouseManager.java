@@ -17,7 +17,7 @@ public class MouseManager {
     private final List<Shape> shapesWithMouseMethods = new ArrayList<>();
 
     /**
-     * Creates a mouse manager for the given world and scene.
+     * Erzeugt einen Maus-Manager für die angegebene `World` und `Scene`.
      */
     public MouseManager(World world, Scene scene) {
         this.world = world;

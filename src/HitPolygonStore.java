@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Caches simple hit-test polygons for sprite images.
+ * Cacht einfache Hit-Test-Polygone für Sprite-Bilder.
  */
 public class HitPolygonStore {
     private static final Map<String, List<Shape.Point>> polygonStore = new HashMap<>();

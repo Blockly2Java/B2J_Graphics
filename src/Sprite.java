@@ -8,7 +8,7 @@ import javafx.scene.image.PixelReader;
 import javafx.util.Duration;
 
 /**
- * Displays an image from the sprite library and can play frame animations.
+ * Zeigt ein Bild aus der Sprite-Bibliothek an und kann Frame-Animationen abspielen.
  */
 public class Sprite extends Shape {
     private static final String DEFAULT_SPRITE_BASE = "/sprites";

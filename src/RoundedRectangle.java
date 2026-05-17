@@ -1,5 +1,5 @@
 /**
- * A rectangle with rounded corners.
+ * Ein Rechteck mit abgerundeten Ecken.
  */
 public class RoundedRectangle extends FilledShape {
     private double radius;

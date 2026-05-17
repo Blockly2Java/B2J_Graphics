@@ -1,5 +1,5 @@
 /**
- * An axis-aligned rectangle.
+ * Ein achsenparalleles Rechteck.
  */
 public class Rectangle extends FilledShape {
     private double width;

@@ -1,5 +1,5 @@
 /**
- * Describes the basic world information available to graphics objects and actors.
+ * Beschreibt die grundlegenden Weltinformationen, die Grafikobjekten und Actoren zur Verfügung stehen.
  */
 public interface IWorld {
     double getWidth();

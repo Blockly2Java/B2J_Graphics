@@ -1,7 +1,7 @@
 /**
- * Base class for objects that react to time and input.
+ * Basisklasse für Objekte, die auf Zeit und Eingaben reagieren.
  *
- * <p>Subclass this when you want your object to animate itself or receive key events.</p>
+ * <p>Erben Sie von dieser Klasse, wenn Ihr Objekt sich selbst animieren oder Tastaturereignisse empfangen soll.</p>
  */
 public abstract class Actor implements IActor {
     private boolean isActing = true;
@@ -10,7 +10,8 @@ public abstract class Actor implements IActor {
     private boolean registrationDone;
 
     /**
-     * Creates a new actor and registers any overridden callbacks with the current world.
+     * Erzeugt einen neuen Actor und registriert ggf. überschriebenen Callback-Methoden
+     * beim aktuellen World-Objekt.
      */
     protected Actor() {
         ensureRegistration();
@@ -53,35 +54,35 @@ public abstract class Actor implements IActor {
 
     @Override
     /**
-     * Returns whether the actor is currently allowed to receive act callbacks.
+     * Gibt zurück, ob der Actor momentan automatische Act-Callbacks erhalten darf.
      */
     public boolean isActing() {
         return isActing;
     }
 
     /**
-     * Returns whether the actor has already been destroyed.
+     * Gibt zurück, ob der Actor bereits zerstört wurde.
      */
     public boolean isDestroyed() {
         return isDestroyed;
     }
 
     /**
-     * Pauses automatic act callbacks for this actor.
+     * Pausiert automatische Act-Callbacks für diesen Actor.
      */
     public void stopActing() {
         isActing = false;
     }
 
     /**
-     * Re-enables automatic act callbacks for this actor.
+     * Aktiviert automatische Act-Callbacks für diesen Actor wieder.
      */
     public void restartActing() {
         isActing = true;
     }
 
     /**
-     * Removes the actor from the world and stops it from receiving further callbacks.
+     * Entfernt den Actor aus der Welt und verhindert weitere Callback-Aufrufe.
      */
     public void destroy() {
         if (isDestroyed) {
@@ -94,7 +95,7 @@ public abstract class Actor implements IActor {
     }
 
     /**
-     * Returns true when the given key is not currently pressed.
+     * Gibt true zurück, wenn die angegebene Taste momentan nicht gedrückt ist.
      */
     public boolean isKeyUp(String key) {
         if (actorManager == null) {
@@ -104,7 +105,7 @@ public abstract class Actor implements IActor {
     }
 
     /**
-     * Returns true when the given key is currently pressed.
+     * Gibt true zurück, wenn die angegebene Taste momentan gedrückt ist.
      */
     public boolean isKeyDown(String key) {
         if (actorManager == null) {
@@ -126,7 +127,7 @@ public abstract class Actor implements IActor {
     }
 
     /**
-     * Changes how often the world calls act methods, measured in frames per second.
+     * Ändert, wie oft die Welt Act-Methoden aufruft (in Hertz / Bilder pro Sekunde).
      */
     public static void setActFrequency(int frequencyInHz) {
         World world = World.getWorld();
@@ -138,35 +139,36 @@ public abstract class Actor implements IActor {
 
     @Override
     /**
-     * Called once per frame for actors that override the frame-based animation hook.
+     * Wird einmal pro Frame aufgerufen für Actoren, die die frame-basierte
+     * Animationsmethode überschreiben.
      */
     public void act() {
     }
 
     @Override
     /**
-     * Called once per frame for actors that need elapsed time in milliseconds.
+     * Wird einmal pro Frame aufgerufen und übergibt die verstrichene Zeit in Millisekunden.
      */
     public void act(double deltaTimeMs) {
     }
 
     @Override
     /**
-     * Called when the user types a character key.
+     * Wird aufgerufen, wenn der Benutzer einen Zeichen-Tastendruck tippt.
      */
     public void onKeyTyped(String key) {
     }
 
     @Override
     /**
-     * Called when a key is released.
+     * Wird aufgerufen, wenn eine Taste losgelassen wird.
      */
     public void onKeyUp(String key) {
     }
 
     @Override
     /**
-     * Called when a key is pressed.
+     * Wird aufgerufen, wenn eine Taste gedrückt wird.
      */
     public void onKeyDown(String key) {
     }

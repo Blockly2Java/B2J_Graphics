@@ -2,7 +2,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 
 /**
- * Helper functions that force JavaFX nodes to update their CSS and transforms.
+ * Hilfsfunktionen, die JavaFX-Knoten dazu zwingen, ihr CSS und ihre Transformationsdaten zu aktualisieren.
  */
 public class PixiHelper {
     private PixiHelper() {

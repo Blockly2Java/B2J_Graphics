@@ -5,10 +5,10 @@ import java.util.Map;
 import java.util.Random;
 
 /**
- * Represents an RGB color with an optional alpha value.
+ * Repräsentiert eine RGB-Farbe mit einem optionalen Alphawert.
  *
- * <p>The class accepts named colors, hex strings, and integer RGB values, and
- * provides helpers for converting between the supported formats.</p>
+ * <p>Die Klasse akzeptiert Farbnamen, Hex-Strings und ganzzahlige RGB-Werte
+ * und bietet Hilfsmethoden zum Konvertieren zwischen den unterstützten Formaten.</p>
  */
 public class Color {
 	public int red;

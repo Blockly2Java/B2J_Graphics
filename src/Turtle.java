@@ -6,7 +6,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 
 /**
- * Turtle graphics helper that draws as it moves.
+ * Turtle-Grafik-Helfer, der beim Bewegen zeichnet.
  */
 public class Turtle extends FilledShape {
     private static final double DEFAULT_TURTLE_SIZE = 20.0;

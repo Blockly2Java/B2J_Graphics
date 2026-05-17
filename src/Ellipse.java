@@ -1,5 +1,5 @@
 /**
- * An ellipse centered on a world position.
+ * Eine Ellipse, zentriert an einer Welt-Position.
  */
 public class Ellipse extends FilledShape {
     private double radiusX;

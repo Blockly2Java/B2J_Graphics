@@ -1,5 +1,5 @@
 /**
- * Describes the logical size of a repeating sprite tile.
+ * Beschreibt die logische Größe eines wiederholenden Sprite-Kachels.
  */
 public class TileImage {
     public final double width;

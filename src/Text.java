@@ -1,5 +1,5 @@
 /**
- * Draws a text label at a world position.
+ * Zeichnet ein Text-Label an einer Welt-Position.
  */
 public class Text extends FilledShape {
     private double x;

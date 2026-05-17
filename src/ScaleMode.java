@@ -1,5 +1,5 @@
 /**
- * Chooses how sprite images are scaled when they are resized.
+ * Legt fest, wie Sprite-Bilder skaliert werden, wenn sie in der Größe verändert werden.
  */
 public enum ScaleMode {
     linear,

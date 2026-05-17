@@ -1,5 +1,5 @@
 /**
- * Represents the Kara agent that moves through the Kara world.
+ * Repräsentiert den Kara-Agenten, der sich durch die Kara-Welt bewegt.
  */
 public class Kara {
     private final JavaKaraWorld world;

@@ -1,5 +1,5 @@
 /**
- * A straight line segment with a configurable thickness.
+ * Ein gerades Liniensegment zwischen zwei Punkten.
  */
 public class Line extends FilledShape {
     private double x1;

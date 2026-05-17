@@ -1,5 +1,5 @@
 /**
- * Lists the built-in sprite sheets that can be loaded by Sprite.
+ * Listet die eingebauten Spritesheets auf, die von `Sprite` geladen werden können.
  */
 public enum SpriteLibrary {
     Background("Background"),

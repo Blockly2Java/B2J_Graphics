@@ -1,5 +1,6 @@
 /**
- * Creates the exception used when code keeps using a graphic object after it was destroyed.
+ * Erzeugt die Ausnahme, die geworfen wird, wenn weiterhin auf ein grafisches Objekt
+ * zugegriffen wird, nachdem es zerstört wurde.
  */
 public class ContainerProxy {
     public static final ContainerProxy instance = new ContainerProxy();

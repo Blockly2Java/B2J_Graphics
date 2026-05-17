@@ -1,5 +1,5 @@
 /**
- * Holds two shapes that were detected as colliding.
+ * Enthält zwei Formen, die als kollidierend erkannt wurden.
  */
 public class CollisionPair<U extends Shape, V extends Shape> {
     public U shapeA;

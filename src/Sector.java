@@ -1,7 +1,10 @@
 /**
  * A pie-slice style shape defined by a center, radius, and angle range.
  */
-public class Sector extends FilledShape {
+    /**
+     * Ein Tortenstück-Stil-Form, definiert durch einen Mittelpunkt, Radius und Winkelbereich.
+     */
+    public class Sector extends FilledShape {
     private double radius;
     private double startAngleDeg;
     private double endAngleDeg;

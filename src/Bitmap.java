@@ -1,7 +1,7 @@
 import java.util.Arrays;
 
 /**
- * A drawable pixel grid that stores color and alpha values explicitly.
+ * Ein zeichnbares Pixel-Raster, das Farb- und Alphawerte explizit speichert.
  */
 public class Bitmap extends Shape {
     private final int resolutionX;

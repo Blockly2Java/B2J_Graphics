@@ -8,8 +8,8 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
- * Handles JavaFX rendering for B2J graphics.
- * Manages JavaFX stages for each World and converts B2J shapes to JavaFX nodes.
+ * Übernimmt das JavaFX-Rendering für B2J-Grafiken.
+ * Verwaltet JavaFX-Stages für jede `World` und wandelt B2J-Formen in JavaFX-Knoten um.
  */
 public class B2J_JavaFX_Renderer {
     
@@ -17,7 +17,7 @@ public class B2J_JavaFX_Renderer {
     private static final Map<Shape, javafx.scene.Node> shapeNodes = new IdentityHashMap<>();
     
     /**
-     * Internal class to hold the JavaFX window for a World
+     * Interne Klasse, die das JavaFX-Fenster für eine `World` hält.
      */
     private static class JavaFXWindow {
         Stage stage;

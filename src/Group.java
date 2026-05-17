@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * A shape that owns other shapes and moves them together as one unit.
+ * Eine Form, die andere Formen besitzt und sie gemeinsam als eine Einheit bewegt.
  */
 public class Group<T extends Shape> extends Shape {
     private final List<Shape> children = new ArrayList<>();

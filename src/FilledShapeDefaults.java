@@ -1,5 +1,5 @@
 /**
- * Convenience methods for changing the default appearance of filled shapes.
+ * Komfortmethoden zum Ändern des Standarderscheinungsbildes gefüllter Formen.
  */
 public class FilledShapeDefaults {
     private FilledShapeDefaults() {

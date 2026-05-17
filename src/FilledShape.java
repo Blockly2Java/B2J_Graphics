@@ -1,5 +1,5 @@
 /**
- * Base class for shapes that can be filled and outlined.
+ * Basisklasse für Formen, die gefüllt und umrandet werden können.
  */
 public abstract class FilledShape extends Shape {
     protected static int defaultFillColor = 0x8080ff;

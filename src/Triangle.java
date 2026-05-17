@@ -1,11 +1,10 @@
 /**
- * A convenience polygon for three-point shapes.
+ * Ein praktisches Polygon für Formen mit drei Punkten.
  */
 public class Triangle extends Polygon {
     public Triangle() {
-        this(0, 0, 100, 0, 0, 100);
+        this(0,0,100,0, 0, 100);
     }
-
     public Triangle(double x1, double y1, double x2, double y2, double x3, double y3) {
         super(true, x1, y1, x2, y2, x3, y3);
     }

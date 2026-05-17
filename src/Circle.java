@@ -1,5 +1,5 @@
 /**
- * A circle centered on a world position.
+ * Ein Kreis, zentriert an einer Welt-Position.
  */
 public class Circle extends FilledShape {
     private double radius;
