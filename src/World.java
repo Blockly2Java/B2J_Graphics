@@ -4,7 +4,7 @@ import java.util.List;
 
 import javafx.application.Platform;
 
-public class World {
+public class World implements IWorld {
     static {
         // Ensure JavaFX Toolkit is initialized before any World instance is created.
         // This allows the library to be used as a dependency without requiring
@@ -34,6 +34,10 @@ public class World {
 
     private Group<? extends Shape> defaultGroup;
 
+    private javafx.scene.Scene scene;
+    private ActorManager actorManager;
+    private MouseManager mouseManager;
+
     public World() {
         this(800, 600);
     }
@@ -52,9 +56,19 @@ public class World {
      * Create a JavaFX window for this world
      */
     private void createJavaFXWindow() {
-        //javafx.application.Platform.runLater(() -> {
-            B2J_JavaFX_Renderer.createWindow(this, "World", currentWidth, currentHeight, backgroundColor);
-        //});
+        B2J_JavaFX_Renderer.createWindow(this, "World", currentWidth, currentHeight, backgroundColor, this::onWindowReady);
+    }
+
+    private void onWindowReady(javafx.scene.Scene createdScene) {
+        this.scene = createdScene;
+        this.actorManager = new ActorManager(createdScene);
+        this.mouseManager = new MouseManager(this, createdScene);
+        for (Shape shape : allShapes) {
+            if (shape != null) {
+                shape.ensureRegistration();
+                mouseManager.registerShape(shape);
+            }
+        }
     }
     
     
@@ -70,6 +84,10 @@ public class World {
         }
         // Add shape to JavaFX rendering
         B2J_JavaFX_Renderer.addShape(shape);
+        shape.ensureRegistration();
+        if (mouseManager != null) {
+            mouseManager.registerShape(shape);
+        }
     }
 
     void unregisterFromDefaultList(Shape shape) {
@@ -81,6 +99,9 @@ public class World {
         allShapes.remove(shape);
         // Remove shape from JavaFX rendering
         B2J_JavaFX_Renderer.removeShape(shape);
+        if (mouseManager != null) {
+            mouseManager.removeShape(shape);
+        }
     }
 
     public static World getWorld() {
@@ -121,18 +142,22 @@ public class World {
         }
     }
 
+    @Override
     public double getWidth() {
         return Math.round(currentWidth);
     }
 
+    @Override
     public double getHeight() {
         return Math.round(currentHeight);
     }
 
+    @Override
     public double getTop() {
         return Math.round(currentTop);
     }
 
+    @Override
     public double getLeft() {
         return Math.round(currentLeft);
     }
@@ -196,7 +221,12 @@ public class World {
         currentHeight = height;
     }
 
+    @Override
     public void setCursor(String cursor) {
+        if (scene != null) {
+            javafx.scene.Cursor fxCursor = javafx.scene.Cursor.cursor(cursor);
+            scene.setCursor(fxCursor);
+        }
     }
 
     public void follow(Shape shape, double margin, double xMin, double xMax, double yMin, double yMax) {
@@ -235,6 +265,38 @@ public class World {
     }
 
     public void addMouseListener(Object mouseListener) {
+        if (mouseManager == null) {
+            return;
+        }
+        if (mouseListener instanceof MouseListener) {
+            mouseManager.addMouseListener((MouseListener) mouseListener);
+        }
+    }
+
+    public ActorManager getActorManager() {
+        return actorManager;
+    }
+
+    @Override
+    public boolean hasActors() {
+        return actorManager != null && actorManager.hasActors();
+    }
+
+    double screenToWorldX(double screenX, double sceneWidth) {
+        if (sceneWidth <= 0) {
+            return currentLeft + screenX;
+        }
+        return currentLeft + screenX * (currentWidth / sceneWidth);
+    }
+
+    double screenToWorldY(double screenY, double sceneHeight) {
+        if (sceneHeight <= 0) {
+            return currentTop + screenY;
+        }
+        if (flippedY) {
+            return currentTop + currentHeight - screenY * (currentHeight / sceneHeight);
+        }
+        return currentTop + screenY * (currentHeight / sceneHeight);
     }
 
     public List<Shape> getAllShapes() {

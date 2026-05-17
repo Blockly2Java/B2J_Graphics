@@ -1,4 +1,4 @@
-public class Line extends Shape {
+public class Line extends FilledShape {
     private double x1;
     private double y1;
     private double x2;

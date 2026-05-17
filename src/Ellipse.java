@@ -1,4 +1,4 @@
-public class Ellipse extends Shape {
+public class Ellipse extends FilledShape {
     private double radiusX;
     private double radiusY;
 

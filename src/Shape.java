@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class Shape {
+public abstract class Shape extends Actor {
     protected static final class Point {
         final double x;
         final double y;
@@ -52,6 +52,9 @@ public abstract class Shape {
     protected boolean visible = defaultVisibility;
     protected boolean isStatic;
     protected boolean destroyed;
+    protected boolean trackMouseMove;
+    protected boolean reactToMouseEventsWhenInvisible;
+    protected boolean mouseLastSeenInsideObject;
 
     protected Color fillColor;
     protected double fillAlpha = 1.0;
@@ -586,6 +589,7 @@ public abstract class Shape {
         return world == null ? World.getWorld() : world;
     }
 
+    @Override
     public void destroy() {
         if (destroyed) {
             return;
@@ -596,6 +600,48 @@ public abstract class Shape {
         }
         if (world != null) {
             world.deregisterShape(this);
+        }
+        super.destroy();
+    }
+
+    public void onMouseUp(double x, double y, int button) {
+    }
+
+    public void onMouseDown(double x, double y, int button) {
+    }
+
+    public void onMouseMove(double x, double y) {
+    }
+
+    public void onMouseEnter(double x, double y) {
+    }
+
+    public void onMouseLeave(double x, double y) {
+    }
+
+    public Shape trackMouseMove(boolean enabled) {
+        this.trackMouseMove = enabled;
+        return this;
+    }
+
+    public Shape reactToMouseEventsWhenInvisible(boolean enabled) {
+        this.reactToMouseEventsWhenInvisible = enabled;
+        return this;
+    }
+
+    boolean hasMouseHandlers() {
+        return isMouseMethodOverridden("onMouseUp", double.class, double.class, int.class)
+            || isMouseMethodOverridden("onMouseDown", double.class, double.class, int.class)
+            || isMouseMethodOverridden("onMouseMove", double.class, double.class)
+            || isMouseMethodOverridden("onMouseEnter", double.class, double.class)
+            || isMouseMethodOverridden("onMouseLeave", double.class, double.class);
+    }
+
+    private boolean isMouseMethodOverridden(String methodName, Class<?>... paramTypes) {
+        try {
+            return getClass().getMethod(methodName, paramTypes).getDeclaringClass() != Shape.class;
+        } catch (NoSuchMethodException e) {
+            return false;
         }
     }
 

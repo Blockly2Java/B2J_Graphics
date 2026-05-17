@@ -195,6 +195,8 @@
                             <goal>sign</goal>
                         </goals>
                         <configuration>
+                            <!-- Use GPG_PASSPHRASE environment variable -->
+                            <passphrase>${env.GPG_PASSPHRASE}</passphrase>
                             <!-- Prevent gpg from using pinentry programs -->
                             <gpgArguments>
                                 <arg>--pinentry-mode</arg>

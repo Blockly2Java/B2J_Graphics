@@ -1,4 +1,4 @@
-public class Circle extends Shape {
+public class Circle extends FilledShape {
     private double radius;
 
     public Circle() {

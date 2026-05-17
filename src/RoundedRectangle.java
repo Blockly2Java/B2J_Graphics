@@ -1,4 +1,4 @@
-public class RoundedRectangle extends Shape {
+public class RoundedRectangle extends FilledShape {
     private double radius;
     private double width;
     private double height;
