@@ -41,6 +41,10 @@ public class B2J_JavaFX_Renderer {
             stage.setMinHeight(height);
             stage.setMaxWidth(width);
             stage.setMaxHeight(height);
+            
+            // Exit the application when the window is closed
+            stage.setOnCloseRequest(event -> System.exit(0));
+            
             stage.show();
         }
     }
