@@ -1,12 +1,10 @@
-//import Ausgabe.Circle;
-
 /**
 Erstelle dein Programm über Blockly und
 klicke auf 'Play', um es auszuführen!
 */
 
 public class B2J_Graphics_DiscoKugel extends Circle { 
-   private double dr = Math.random() * 10;
+   private double dr = 10;
 
    public B2J_Graphics_DiscoKugel(double x, double y) {
       super(x, y, Math.random() * 500);
@@ -22,23 +20,16 @@ public class B2J_Graphics_DiscoKugel extends Circle {
          dr = -dr;
       }
       setRadius(r+dr); 
+      setFillColor(Color.randomColor());
    }
 
    @Override
    public void onKeyDown(String key) {
       switch (key) {
-          case "d":
-            move(5, 0);
-            break;
-          case "a":
-            move(-5, 0);
-            break;
-          case "w":
-            move(0, -5);
-            break;
-          case "s":
-            move(0, 5);
-            break;
+          case "d" -> move(5, 0);
+          case "a" -> move(-5, 0);
+          case "w" -> move(0, -5);
+          case "s" -> move(0, 5);
       }
    }
 
