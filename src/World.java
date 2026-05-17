@@ -2,7 +2,6 @@ import java.awt.GraphicsEnvironment;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * Repräsentiert die Zeichenfläche, die alle Formen, Actoren und die Maussteuerung besitzt.
@@ -23,10 +22,8 @@ public class World implements IWorld {
         if (FX_AVAILABLE) {
             try {
                 Class.forName("JavaFXInit");
-            } catch (ClassNotFoundException e) {
-                // JavaFX classes not available — that's fine for headless
-            } catch (Exception e) {
-                // JavaFX initialization failed
+            } catch (Throwable e) {
+                // JavaFX classes not available or initialization failed — that's fine for headless
             }
         }
     }

@@ -9,12 +9,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javafx.application.Platform;
-import javafx.scene.Scene;
-import javafx.scene.input.KeyEvent;
-
 /**
  * Registriert Actoren und verteilt deren `act`- und Tastatur-Callbacks.
+ * Uses reflection to avoid direct JavaFX imports that would fail in headless environments.
  */
 class ActorManager {
 
@@ -25,7 +22,7 @@ class ActorManager {
 
     private ScheduledFuture<?> actTask;
     private int timerFrequencyHz = 30;
-    private Scene scene;
+    private Object scene;
 
     /**
      * Erzeugt einen Manager für eine JavaFX-Scene und startet den Act-Timer.
@@ -36,32 +33,84 @@ class ActorManager {
             actors.put(type, new ArrayList<>());
         }
         if (FX_AVAILABLE && sceneObj != null) {
-            this.scene = (Scene) sceneObj;
-            registerKeyboardListeners(scene);
+            this.scene = sceneObj;
+            try {
+                registerKeyboardListeners(sceneObj);
+            } catch (Exception e) {
+                // Keyboard registration failed — continue without it
+            }
         }
         if (FX_AVAILABLE) {
             setTimerFrequency(timerFrequencyHz);
         }
     }
 
-    private void registerKeyboardListeners(Scene scene) {
-        if (!FX_AVAILABLE) {
+    private void registerKeyboardListeners(Object sceneObj) throws Exception {
+        if (!FX_AVAILABLE || sceneObj == null) {
             return;
         }
-        scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-            String key = normalizeKey(event.getText(), event.getCode().getName());
-            keysDown.add(key);
-            onKeyDown(key);
+        // Use reflection to add keyboard event handlers to the Scene
+        Class<?> sceneClass = sceneObj.getClass();
+        java.lang.reflect.Method addEventHandlerMethod = sceneClass.getMethod("addEventHandler", java.lang.Object.class, java.lang.Object.class);
+        
+        // KEY_PRESSED
+        Object keyEventType = getEventType("KEY_PRESSED");
+        addEventHandlerMethod.invoke(sceneObj, keyEventType, new java.util.function.Consumer<Object>() {
+            @Override
+            public void accept(Object event) {
+                try {
+                    String key = normalizeKey(
+                        (String) event.getClass().getMethod("getText").invoke(event),
+                        (String) event.getClass().getMethod("getCode").invoke(event)
+                    );
+                    keysDown.add(key);
+                    onKeyDown(key);
+                } catch (Exception ex) {
+                    // ignore
+                }
+            }
         });
-        scene.addEventHandler(KeyEvent.KEY_RELEASED, event -> {
-            String key = normalizeKey(event.getText(), event.getCode().getName());
-            keysDown.remove(key);
-            onKeyUp(key);
+        
+        // KEY_RELEASED
+        Object keyReleasedType = getEventType("KEY_RELEASED");
+        addEventHandlerMethod.invoke(sceneObj, keyReleasedType, new java.util.function.Consumer<Object>() {
+            @Override
+            public void accept(Object event) {
+                try {
+                    String key = normalizeKey(
+                        (String) event.getClass().getMethod("getText").invoke(event),
+                        (String) event.getClass().getMethod("getCode").invoke(event)
+                    );
+                    keysDown.remove(key);
+                    onKeyUp(key);
+                } catch (Exception ex) {
+                    // ignore
+                }
+            }
         });
-        scene.addEventHandler(KeyEvent.KEY_TYPED, event -> {
-            String key = normalizeKey(event.getCharacter(), event.getCharacter());
-            onKeyTyped(key);
+        
+        // KEY_TYPED
+        Object keyTypedType = getEventType("KEY_TYPED");
+        addEventHandlerMethod.invoke(sceneObj, keyTypedType, new java.util.function.Consumer<Object>() {
+            @Override
+            public void accept(Object event) {
+                try {
+                    String key = normalizeKey(
+                        (String) event.getClass().getMethod("getCharacter").invoke(event),
+                        (String) event.getClass().getMethod("getCharacter").invoke(event)
+                    );
+                    onKeyTyped(key);
+                } catch (Exception ex) {
+                    // ignore
+                }
+            }
         });
+    }
+
+    private Object getEventType(String typeName) throws Exception {
+        Class<?> keyEventTypeClass = Class.forName("javafx.scene.input.KeyEvent");
+        java.lang.reflect.Field field = keyEventTypeClass.getField(typeName);
+        return field.get(null);
     }
 
     private String normalizeKey(String primary, String fallback) {
@@ -116,10 +165,21 @@ class ActorManager {
         if (actTask != null) {
             actTask.cancel(false);
         }
+        final double dt = 1000.0 / timerFrequencyHz;
         actTask = scheduler.scheduleAtFixedRate(() -> {
-            double dt = 1000.0 / timerFrequencyHz;
             if (FX_AVAILABLE) {
-                Platform.runLater(() -> callActMethods(dt));
+                try {
+                    Class<?> platformClass = Class.forName("javafx.application.Platform");
+                    java.lang.reflect.Method runLaterMethod = platformClass.getMethod("runLater", java.lang.Runnable.class);
+                    runLaterMethod.invoke(null, (Object) new Runnable() {
+                        @Override
+                        public void run() {
+                            callActMethods(dt);
+                        }
+                    });
+                } catch (Exception e) {
+                    callActMethods(dt);
+                }
             } else {
                 callActMethods(dt);
             }

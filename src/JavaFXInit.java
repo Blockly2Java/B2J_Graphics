@@ -1,11 +1,10 @@
 import java.awt.GraphicsEnvironment;
 
-import javafx.application.Platform;
-
 /**
  * Holds all JavaFX imports and initialization.
  * This class is only loaded when JavaFX is actually needed.
  * Headless environments will never load this class, avoiding NoClassDefFoundError.
+ * Uses reflection to avoid direct compile-time dependency on JavaFX classes.
  */
 class JavaFXInit {
 
@@ -14,13 +13,15 @@ class JavaFXInit {
     static {
         if (FX_AVAILABLE) {
             try {
-                Platform.startup(() -> {
+                // Use reflection to load and call Platform.startup()
+                // This prevents NoClassDefFoundError if JavaFX is missing at runtime
+                Class<?> platformClass = Class.forName("javafx.application.Platform");
+                java.lang.reflect.Method startupMethod = platformClass.getMethod("startup", java.util.function.Consumer.class);
+                startupMethod.invoke(null, (java.util.function.Consumer<?>) args -> {
                     // No-op — only here to initialize the JavaFX Toolkit
                 });
-            } catch (IllegalStateException e) {
-                // Toolkit already initialized (e.g., via Application.launch() in B2J_Graphics_Main)
-            } catch (Exception e) {
-                // JavaFX initialization failed on this headless system
+            } catch (Throwable e) {
+                // JavaFX initialization failed or is unavailable — that's fine for headless/CI environments
             }
         }
     }

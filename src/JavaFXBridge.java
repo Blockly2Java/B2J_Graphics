@@ -1,13 +1,9 @@
 import java.util.List;
 import java.util.function.Consumer;
 
-import javafx.animation.Timeline;
-import javafx.scene.Scene;
-import javafx.scene.image.Image;
-
 /**
  * Thin delegation layer for all JavaFX operations.
- * All JavaFX imports live here, so headless environments never load JavaFX classes.
+ * Uses reflection to avoid direct JavaFX imports that would fail in headless environments.
  */
 class JavaFXBridge {
 
@@ -26,12 +22,17 @@ class JavaFXBridge {
      * Create a JavaFX window for a new World with onReady callback.
      */
     static void createWindow(World world, String title, double width, double height, Color backgroundColor,
-            Consumer<Scene> onReady) {
+            Consumer<Object> onReady) {
         if (!JavaFXInit.FX_AVAILABLE) {
             return;
         }
         JavaFXInit.loadRendererClasses();
-        B2J_JavaFX_Renderer.createWindow(world, title, width, height, backgroundColor, onReady);
+        try {
+            java.lang.reflect.Method method = B2J_JavaFX_Renderer.class.getMethod("createWindow", World.class, String.class, double.class, double.class, Color.class, java.util.function.Consumer.class);
+            method.invoke(null, world, title, width, height, backgroundColor, (java.util.function.Consumer) onReady);
+        } catch (Exception e) {
+            // ignore
+        }
     }
 
     /**
@@ -81,7 +82,7 @@ class JavaFXBridge {
     /**
      * Get the JavaFX root group for a world.
      */
-    static javafx.scene.Group getRootGroup(World world) {
+    static Object getRootGroup(World world) {
         if (!JavaFXInit.FX_AVAILABLE) {
             return null;
         }
@@ -97,9 +98,15 @@ class JavaFXBridge {
             return;
         }
         JavaFXInit.loadRendererClasses();
-        Scene scene = (Scene) sceneObj;
-        javafx.scene.Cursor fxCursor = javafx.scene.Cursor.cursor(cursor);
-        scene.setCursor(fxCursor);
+        try {
+            Class<?> cursorClass = Class.forName("javafx.scene.Cursor");
+            java.lang.reflect.Method cursorMethod = cursorClass.getMethod("cursor", String.class);
+            Object fxCursor = cursorMethod.invoke(null, cursor);
+            java.lang.reflect.Method setCursorMethod = sceneObj.getClass().getMethod("setCursor", cursorClass);
+            setCursorMethod.invoke(sceneObj, fxCursor);
+        } catch (Exception e) {
+            // ignore
+        }
     }
 
     /**
@@ -116,7 +123,7 @@ class JavaFXBridge {
     /**
      * Start a sprite animation timeline.
      */
-    static Timeline startSpriteAnimation(Sprite shape, int imagesPerSecond, List<Integer> sequence, RepeatType repeatType) {
+    static Object startSpriteAnimation(Sprite shape, int imagesPerSecond, List<Integer> sequence, RepeatType repeatType) {
         if (!JavaFXInit.FX_AVAILABLE) {
             return null;
         }
@@ -182,7 +189,7 @@ class JavaFXBridge {
     /**
      * Load a sprite image from resources.
      */
-    static Image loadSpriteImage(SpriteLibrary lib, int index) {
+    static Object loadSpriteImage(SpriteLibrary lib, int index) {
         if (!JavaFXInit.FX_AVAILABLE) {
             return null;
         }
@@ -197,7 +204,12 @@ class JavaFXBridge {
         if (img == null) {
             return 0;
         }
-        return ((Image) img).getWidth();
+        try {
+            java.lang.reflect.Method getWidthMethod = img.getClass().getMethod("getWidth");
+            return (Double) getWidthMethod.invoke(img);
+        } catch (Exception e) {
+            return 0;
+        }
     }
 
     /**
@@ -207,55 +219,97 @@ class JavaFXBridge {
         if (img == null) {
             return 0;
         }
-        return ((Image) img).getHeight();
+        try {
+            java.lang.reflect.Method getHeightMethod = img.getClass().getMethod("getHeight");
+            return (Double) getHeightMethod.invoke(img);
+        } catch (Exception e) {
+            return 0;
+        }
     }
 
     /**
      * Create a Turtle line node.
      */
-    static javafx.scene.Group createTurtleLineNode(Turtle shape) {
+    static Object createTurtleLineNode(Turtle shape) {
         if (!JavaFXInit.FX_AVAILABLE) {
             return null;
         }
-        javafx.scene.Group group = new javafx.scene.Group();
-        for (Turtle.LineSegment segment : shape.getSegments()) {
-            javafx.scene.shape.Line line = new javafx.scene.shape.Line(segment.x1, segment.y1, segment.x2, segment.y2);
-            if (segment.color != null) {
-                javafx.scene.paint.Color base = toFxColor(segment.color, segment.alpha);
-                line.setStroke(base);
+        try {
+            Class<?> groupClass = Class.forName("javafx.scene.Group");
+            Object group = groupClass.getDeclaredConstructor().newInstance();
+            java.lang.reflect.Method getChildrenMethod = groupClass.getMethod("getChildren");
+            java.lang.reflect.Method addMethod = getChildrenMethod.getReturnType().getMethod("add", java.lang.Object.class);
+
+            Class<?> lineClass = Class.forName("javafx.scene.shape.Line");
+            java.lang.reflect.Constructor<?> lineConstructor = lineClass.getDeclaredConstructor();
+            java.lang.reflect.Method setX1Method = lineClass.getMethod("setX1", double.class);
+            java.lang.reflect.Method setY1Method = lineClass.getMethod("setY1", double.class);
+            java.lang.reflect.Method setX2Method = lineClass.getMethod("setX2", double.class);
+            java.lang.reflect.Method setY2Method = lineClass.getMethod("setY2", double.class);
+            java.lang.reflect.Method setStrokeMethod = lineClass.getMethod("setStroke", Class.forName("javafx.scene.paint.Color"));
+            java.lang.reflect.Method setStrokeWidthMethod = lineClass.getMethod("setStrokeWidth", double.class);
+
+            for (Turtle.LineSegment segment : shape.getSegments()) {
+                Object line = lineConstructor.newInstance();
+                setX1Method.invoke(line, segment.x1);
+                setY1Method.invoke(line, segment.y1);
+                setX2Method.invoke(line, segment.x2);
+                setY2Method.invoke(line, segment.y2);
+                if (segment.color != null) {
+                    Object fxColor = toFxColor(segment.color, segment.alpha);
+                    setStrokeMethod.invoke(line, fxColor);
+                }
+                setStrokeWidthMethod.invoke(line, segment.width);
+                addMethod.invoke(getChildrenMethod.invoke(group), line);
             }
-            line.setStrokeWidth(segment.width);
-            group.getChildren().add(line);
+            return group;
+        } catch (Exception e) {
+            return null;
         }
-        return group;
     }
 
     /**
      * Create a Turtle polygon node.
      */
-    static javafx.scene.shape.Polygon createTurtlePolygonNode(Turtle shape) {
+    static Object createTurtlePolygonNode(Turtle shape) {
         if (!JavaFXInit.FX_AVAILABLE || !shape.isShowTurtle()) {
             return null;
         }
-        double size = shape.getTurtleSize();
-        double rad = Math.toRadians(shape.getTurtleAngleDeg());
-        double cos = Math.cos(rad);
-        double sin = Math.sin(rad);
+        try {
+            double size = shape.getTurtleSize();
+            double rad = Math.toRadians(shape.getTurtleAngleDeg());
+            double cos = Math.cos(rad);
+            double sin = Math.sin(rad);
 
-        double x1 = shape.centerX + cos * size;
-        double y1 = shape.centerY - sin * size;
-        double x2 = shape.centerX + Math.cos(rad + Math.toRadians(140)) * size * 0.6;
-        double y2 = shape.centerY - Math.sin(rad + Math.toRadians(140)) * size * 0.6;
-        double x3 = shape.centerX + Math.cos(rad - Math.toRadians(140)) * size * 0.6;
-        double y3 = shape.centerY - Math.sin(rad - Math.toRadians(140)) * size * 0.6;
+            double x1 = shape.centerX + cos * size;
+            double y1 = shape.centerY - sin * size;
+            double x2 = shape.centerX + Math.cos(rad + Math.toRadians(140)) * size * 0.6;
+            double y2 = shape.centerY - Math.sin(rad + Math.toRadians(140)) * size * 0.6;
+            double x3 = shape.centerX + Math.cos(rad - Math.toRadians(140)) * size * 0.6;
+            double y3 = shape.centerY - Math.sin(rad - Math.toRadians(140)) * size * 0.6;
 
-        javafx.scene.shape.Polygon turtle = new javafx.scene.shape.Polygon();
-        turtle.getPoints().addAll(x1, y1, x2, y2, x3, y3);
-        turtle.setFill(javafx.scene.paint.Color.GREEN);
-        return turtle;
+            Class<?> polygonClass = Class.forName("javafx.scene.shape.Polygon");
+            Object polygon = polygonClass.getDeclaredConstructor().newInstance();
+            java.lang.reflect.Method getPointsMethod = polygonClass.getMethod("getPoints");
+            java.lang.reflect.Method addAllMethod = getPointsMethod.getReturnType().getMethod("addAll", double[].class);
+            java.lang.reflect.Method setFillMethod = polygonClass.getMethod("setFill", Class.forName("javafx.scene.paint.Color"));
+
+            double[] points = {x1, y1, x2, y2, x3, y3};
+            addAllMethod.invoke(getPointsMethod.invoke(polygon), (Object) points);
+            setFillMethod.invoke(polygon, toFxColor(Color.GREEN.toInt(), 1.0));
+            return polygon;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
-    private static javafx.scene.paint.Color toFxColor(int rgb, double alpha) {
-        return javafx.scene.paint.Color.rgb((rgb >> 16) & 0xff, (rgb >> 8) & 0xff, rgb & 0xff, alpha);
+    private static Object toFxColor(int rgb, double alpha) {
+        try {
+            Class<?> colorClass = Class.forName("javafx.scene.paint.Color");
+            java.lang.reflect.Method rgbMethod = colorClass.getMethod("rgb", int.class, int.class, int.class, double.class);
+            return rgbMethod.invoke(null, (rgb >> 16) & 0xff, (rgb >> 8) & 0xff, rgb & 0xff, alpha);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

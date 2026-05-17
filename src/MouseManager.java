@@ -2,15 +2,9 @@ import java.awt.GraphicsEnvironment;
 import java.util.ArrayList;
 import java.util.List;
 
-import javafx.scene.Scene;
-import javafx.scene.input.MouseEvent;
-
 /**
  * Übersetzt JavaFX-Mausereignisse in Weltkoordinaten und verteilt sie an Listener und Formen.
- *
- * <p>Maustastenwerte werden als Ganzzahlen übergeben und folgen der JavaFX-Logik
- * {@code MouseButton.ordinal()}: 0 = NONE, 1 = PRIMARY (normalerweise links), 2 = MIDDLE,
- * 3 = SECONDARY (normalerweise rechts). Höhere Werte stehen für zusätzliche Tasten zur Verfügung.</p>
+ * Uses reflection to avoid direct JavaFX imports that would fail in headless environments.
  */
 class MouseManager {
 
@@ -26,19 +20,51 @@ class MouseManager {
     public MouseManager(World world, Object sceneObj) {
         this.world = world;
         if (FX_AVAILABLE && sceneObj != null) {
-            registerListeners((Scene) sceneObj);
+            try {
+                registerListeners(sceneObj);
+            } catch (Exception e) {
+                // Mouse registration failed — continue without it
+            }
         }
     }
 
-    private void registerListeners(Scene scene) {
-        if (!FX_AVAILABLE) {
+    private void registerListeners(Object sceneObj) throws Exception {
+        if (!FX_AVAILABLE || sceneObj == null) {
             return;
         }
-        scene.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> handleMouseEvent(event, MouseEventKind.DOWN));
-        scene.addEventHandler(MouseEvent.MOUSE_RELEASED, event -> handleMouseEvent(event, MouseEventKind.UP));
-        scene.addEventHandler(MouseEvent.MOUSE_MOVED, event -> handleMouseEvent(event, MouseEventKind.MOVE));
-        scene.addEventHandler(MouseEvent.MOUSE_ENTERED, event -> handleMouseEvent(event, MouseEventKind.ENTER));
-        scene.addEventHandler(MouseEvent.MOUSE_EXITED, event -> handleMouseEvent(event, MouseEventKind.LEAVE));
+        Class<?> sceneClass = sceneObj.getClass();
+        java.lang.reflect.Method addEventHandlerMethod = sceneClass.getMethod("addEventHandler", java.lang.Object.class, java.lang.Object.class);
+
+        Object mousePressedType = getMouseEventType("MOUSE_PRESSED");
+        addEventHandlerMethod.invoke(sceneObj, mousePressedType, new java.util.function.Consumer<Object>() {
+            public void accept(Object event) { handleMouseEvent(event, MouseEventKind.DOWN); }
+        });
+
+        Object mouseReleasedType = getMouseEventType("MOUSE_RELEASED");
+        addEventHandlerMethod.invoke(sceneObj, mouseReleasedType, new java.util.function.Consumer<Object>() {
+            public void accept(Object event) { handleMouseEvent(event, MouseEventKind.UP); }
+        });
+
+        Object mouseMovedType = getMouseEventType("MOUSE_MOVED");
+        addEventHandlerMethod.invoke(sceneObj, mouseMovedType, new java.util.function.Consumer<Object>() {
+            public void accept(Object event) { handleMouseEvent(event, MouseEventKind.MOVE); }
+        });
+
+        Object mouseEnteredType = getMouseEventType("MOUSE_ENTERED");
+        addEventHandlerMethod.invoke(sceneObj, mouseEnteredType, new java.util.function.Consumer<Object>() {
+            public void accept(Object event) { handleMouseEvent(event, MouseEventKind.ENTER); }
+        });
+
+        Object mouseExitedType = getMouseEventType("MOUSE_EXITED");
+        addEventHandlerMethod.invoke(sceneObj, mouseExitedType, new java.util.function.Consumer<Object>() {
+            public void accept(Object event) { handleMouseEvent(event, MouseEventKind.LEAVE); }
+        });
+    }
+
+    private Object getMouseEventType(String typeName) throws Exception {
+        Class<?> mouseEventClass = Class.forName("javafx.scene.input.MouseEvent");
+        java.lang.reflect.Field field = mouseEventClass.getField(typeName);
+        return field.get(null);
     }
 
     /**
@@ -83,19 +109,30 @@ class MouseManager {
         return !shapesWithMouseMethods.isEmpty() || !javaMouseListeners.isEmpty();
     }
 
-    private void handleMouseEvent(MouseEvent event, MouseEventKind kind) {
-        double x = world.screenToWorldX(event.getX(), world.getWidth());
-        double y = world.screenToWorldY(event.getY(), world.getHeight());
+    private void handleMouseEvent(Object event, MouseEventKind kind) {
+        try {
+            double x = world.screenToWorldX((Double) event.getClass().getMethod("getX").invoke(event), world.getWidth());
+            double y = world.screenToWorldY((Double) event.getClass().getMethod("getY").invoke(event), world.getHeight());
 
-        for (MouseListener listener : new ArrayList<>(javaMouseListeners)) {
-            dispatchListener(listener, kind, x, y, event.getButton().ordinal());
-        }
-
-        for (Shape shape : new ArrayList<>(shapesWithMouseMethods)) {
-            if (!shape.reactToMouseEventsWhenInvisible && !shape.isVisible()) {
-                continue;
+            Object buttonObj = event.getClass().getMethod("getButton").invoke(event);
+            int button = 0;
+            if (buttonObj != null) {
+                java.lang.reflect.Method ordinalMethod = buttonObj.getClass().getMethod("ordinal");
+                button = (Integer) ordinalMethod.invoke(buttonObj);
             }
-            dispatchShape(shape, kind, x, y, event.getButton().ordinal());
+
+            for (MouseListener listener : new ArrayList<>(javaMouseListeners)) {
+                dispatchListener(listener, kind, x, y, button);
+            }
+
+            for (Shape shape : new ArrayList<>(shapesWithMouseMethods)) {
+                if (!shape.reactToMouseEventsWhenInvisible && !shape.isVisible()) {
+                    continue;
+                }
+                dispatchShape(shape, kind, x, y, button);
+            }
+        } catch (Exception e) {
+            // ignore
         }
     }
 
