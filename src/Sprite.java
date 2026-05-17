@@ -2,12 +2,6 @@ import java.awt.GraphicsEnvironment;
 import java.util.ArrayList;
 import java.util.List;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.scene.image.Image;
-import javafx.scene.image.PixelReader;
-import javafx.util.Duration;
-
 /**
  * Zeigt ein Bild aus der Sprite-Bibliothek an und kann Frame-Animationen abspielen.
  */
@@ -19,14 +13,14 @@ class Sprite extends Shape {
     private SpriteLibrary spriteLibrary;
     private int imageIndex;
     private ScaleMode scaleMode = ScaleMode.nearest_neighbour;
-    private Image image;
+    // Use Object to avoid direct JavaFX import
+    private Object image;
     private double baseWidth = 50;
     private double baseHeight = 50;
 
-    private Timeline animationTimeline;
+    private int[] animationIndices;
     private RepeatType repeatType = RepeatType.once;
     private boolean animationPaused;
-    private int[] animationIndices;
 
     public Sprite(double x, double y, SpriteLibrary spriteLibrary, int index, ScaleMode scaleMode) {
         super(x, y);
@@ -62,16 +56,12 @@ class Sprite extends Shape {
         registerWithWorld();
     }
 
-    public Sprite(Shape shape) {
-        this(shape, ScaleMode.nearest_neighbour);
-    }
-
     public void setImage(SpriteLibrary spriteLibrary, int imageIndex) {
         this.spriteLibrary = spriteLibrary;
         this.imageIndex = imageIndex;
         loadImage();
         if (FX_AVAILABLE && world != null) {
-            B2J_JavaFX_Renderer.updateShape(this);
+            JavaFXBridge.updateSpriteShape(this);
         }
     }
 
@@ -79,7 +69,7 @@ class Sprite extends Shape {
         this.imageIndex = imageIndex;
         loadImage();
         if (FX_AVAILABLE && world != null) {
-            B2J_JavaFX_Renderer.updateShape(this);
+            JavaFXBridge.updateSpriteShape(this);
         }
     }
 
@@ -89,7 +79,7 @@ class Sprite extends Shape {
         }
         this.animationIndices = imageIndexArray.clone();
         this.repeatType = repeatType == null ? RepeatType.once : repeatType;
-        startTimeline(imagesPerSecond, buildSequenceFromArray(imageIndexArray));
+        JavaFXBridge.startSpriteAnimation(this, imagesPerSecond, buildSequenceFromArray(imageIndexArray), this.repeatType);
     }
 
     public void playAnimation(int fromIndex, int toIndex, RepeatType repeatType, int imagesPerSecond) {
@@ -108,25 +98,19 @@ class Sprite extends Shape {
     }
 
     public void stopAnimation() {
-        if (animationTimeline != null) {
-            animationTimeline.stop();
-        }
+        JavaFXBridge.stopSpriteAnimation(this);
         animationPaused = false;
         animationIndices = null;
     }
 
     public void pauseAnimation() {
-        if (animationTimeline != null) {
-            animationTimeline.pause();
-            animationPaused = true;
-        }
+        JavaFXBridge.pauseSpriteAnimation(this);
+        animationPaused = true;
     }
 
     public void resumeAnimation() {
-        if (animationTimeline != null && animationPaused) {
-            animationTimeline.play();
-            animationPaused = false;
-        }
+        JavaFXBridge.resumeSpriteAnimation(this);
+        animationPaused = false;
     }
 
     public void setAsBackgroundImage() {
@@ -159,7 +143,7 @@ class Sprite extends Shape {
         this.baseWidth = width;
         this.baseHeight = height;
         if (FX_AVAILABLE && world != null) {
-            B2J_JavaFX_Renderer.updateShape(this);
+            JavaFXBridge.updateSpriteShape(this);
         }
     }
 
@@ -175,39 +159,17 @@ class Sprite extends Shape {
         if (image == null) {
             return 0;
         }
-        try {
-            PixelReader reader = image.getPixelReader();
-            if (reader == null) {
-                return 0;
-            }
-            int ix = clampPixel(x, image.getWidth());
-            int iy = clampPixel(y, image.getHeight());
-            return reader.getArgb(ix, iy) & 0x00ffffff;
-        } catch (Exception e) {
-            return 0;
-        }
+        return JavaFXBridge.getSpritePixelColor(this, x, y);
     }
 
     public double getPixelAlpha(int x, int y) {
         if (image == null) {
             return 0.0;
         }
-        try {
-            PixelReader reader = image.getPixelReader();
-            if (reader == null) {
-                return 0.0;
-            }
-            int ix = clampPixel(x, image.getWidth());
-            int iy = clampPixel(y, image.getHeight());
-            int argb = reader.getArgb(ix, iy);
-            int alpha = (argb >> 24) & 0xff;
-            return alpha / 255.0;
-        } catch (Exception e) {
-            return 0.0;
-        }
+        return JavaFXBridge.getSpritePixelAlpha(this, x, y);
     }
 
-    public Image getImage() {
+    public Object getImage() {
         return image;
     }
 
@@ -225,48 +187,16 @@ class Sprite extends Shape {
             baseHeight = Math.max(baseHeight, 50);
             return;
         }
-        Image loaded = null;
-        if (spriteLibrary != null) {
-            String resourcePath = String.format("%s/%s/%d.png", DEFAULT_SPRITE_BASE, spriteLibrary.getName(), imageIndex);
-            loaded = loadImageFromResource(resourcePath);
-        }
-        if (loaded == null) {
+        Object loaded = JavaFXBridge.loadSpriteImage(spriteLibrary, imageIndex);
+        if (loaded != null) {
+            image = loaded;
+            baseWidth = JavaFXBridge.getImageWidth(image);
+            baseHeight = JavaFXBridge.getImageHeight(image);
+        } else {
             image = null;
             baseWidth = Math.max(baseWidth, 50);
             baseHeight = Math.max(baseHeight, 50);
-            return;
         }
-        image = loaded;
-        baseWidth = image.getWidth();
-        baseHeight = image.getHeight();
-    }
-
-    private Image loadImageFromResource(String path) {
-        try {
-            return new Image(Sprite.class.getResourceAsStream(path));
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    private void startTimeline(int imagesPerSecond, List<Integer> sequence) {
-        if (!FX_AVAILABLE) {
-            return;
-        }
-        stopAnimation();
-        if (imagesPerSecond <= 0) {
-            imagesPerSecond = 1;
-        }
-        Duration frameDuration = Duration.millis(1000.0 / imagesPerSecond);
-        animationTimeline = new Timeline();
-        for (int i = 0; i < sequence.size(); i++) {
-            int index = sequence.get(i);
-            animationTimeline.getKeyFrames().add(new KeyFrame(frameDuration.multiply(i), event -> setImageIndex(index)));
-        }
-        animationTimeline.setCycleCount(repeatType == RepeatType.loop || repeatType == RepeatType.backAndForth
-            ? Timeline.INDEFINITE
-            : 1);
-        animationTimeline.play();
     }
 
     private List<Integer> buildSequenceFromArray(int[] array) {
@@ -280,12 +210,5 @@ class Sprite extends Shape {
             }
         }
         return sequence;
-    }
-
-    private int clampPixel(int value, double max) {
-        if (max <= 0) {
-            return 0;
-        }
-        return Math.max(0, Math.min((int) max - 1, value));
     }
 }

@@ -25,15 +25,18 @@ class ActorManager {
 
     private ScheduledFuture<?> actTask;
     private int timerFrequencyHz = 30;
+    private Scene scene;
 
     /**
      * Erzeugt einen Manager für eine JavaFX-Scene und startet den Act-Timer.
+     * Accepts Object to avoid direct JavaFX import in callers.
      */
-    public ActorManager(Scene scene) {
+    public ActorManager(Object sceneObj) {
         for (ActorType type : ActorType.values()) {
             actors.put(type, new ArrayList<>());
         }
-        if (FX_AVAILABLE && scene != null) {
+        if (FX_AVAILABLE && sceneObj != null) {
+            this.scene = (Scene) sceneObj;
             registerKeyboardListeners(scene);
         }
         if (FX_AVAILABLE) {

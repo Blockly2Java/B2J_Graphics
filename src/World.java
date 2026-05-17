@@ -2,8 +2,7 @@ import java.awt.GraphicsEnvironment;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import javafx.application.Platform;
+import java.util.function.Consumer;
 
 /**
  * Repräsentiert die Zeichenfläche, die alle Formen, Actoren und die Maussteuerung besitzt.
@@ -19,19 +18,15 @@ public class World implements IWorld {
     private static final boolean FX_AVAILABLE = !GraphicsEnvironment.isHeadless();
 
     static {
+        // Lazily load JavaFX initialization class to avoid NoClassDefFoundError
+        // in headless environments where JavaFX is not on the classpath.
         if (FX_AVAILABLE) {
-            // Ensure JavaFX Toolkit is initialized before any World instance is created.
-            // This allows the library to be used as a dependency without requiring
-            // consumers to extend javafx.application.Application.
             try {
-                Platform.startup(() -> {
-                    // No-op — only here to initialize the JavaFX Toolkit
-                });
-            } catch (IllegalStateException e) {
-                // Toolkit already initialized (e.g., via Application.launch() in B2J_Graphics_Main)
+                Class.forName("JavaFXInit");
+            } catch (ClassNotFoundException e) {
+                // JavaFX classes not available — that's fine for headless
             } catch (Exception e) {
-                // JavaFX initialization failed on this headless system; FX_AVAILABLE should have caught this,
-                // but some environments report non-headless while still lacking JavaFX natives.
+                // JavaFX initialization failed
             }
         }
     }
@@ -53,7 +48,8 @@ public class World implements IWorld {
 
     private Group<? extends Shape> defaultGroup;
 
-    private javafx.scene.Scene scene;
+    // Use Object to avoid direct JavaFX import
+    private Object scene;
     private ActorManager actorManager;
     private MouseManager mouseManager;
 
@@ -78,27 +74,29 @@ public class World implements IWorld {
             createJavaFXWindow();
         }
     }
-    
+
     /**
      * Erstellt ein JavaFX-Fenster für diese Welt.
      */
     private void createJavaFXWindow() {
-        B2J_JavaFX_Renderer.createWindow(this, "World", currentWidth, currentHeight, backgroundColor, this::onWindowReady);
+        JavaFXBridge.createWindow(this, "World", currentWidth, currentHeight, backgroundColor, this::onWindowReady);
     }
 
-    private void onWindowReady(javafx.scene.Scene createdScene) {
+    private void onWindowReady(Object createdScene) {
         this.scene = createdScene;
-        this.actorManager = new ActorManager(createdScene);
-        this.mouseManager = new MouseManager(this, createdScene);
-        for (Shape shape : allShapes) {
-            if (shape != null) {
-                shape.ensureRegistration();
-                mouseManager.registerShape(shape);
+        if (createdScene != null) {
+            this.actorManager = new ActorManager(createdScene);
+            this.mouseManager = new MouseManager(this, createdScene);
+            for (Shape shape : allShapes) {
+                if (shape != null) {
+                    shape.ensureRegistration();
+                    mouseManager.registerShape(shape);
+                }
             }
         }
     }
-    
-    
+
+
     void registerShape(Shape shape) {
         if (shape == null) {
             return;
@@ -110,7 +108,7 @@ public class World implements IWorld {
             rootShapes.add(shape);
         }
         // Add shape to JavaFX rendering
-        B2J_JavaFX_Renderer.addShape(shape);
+        JavaFXBridge.addShape(shape);
         shape.ensureRegistration();
         if (mouseManager != null) {
             mouseManager.registerShape(shape);
@@ -125,7 +123,7 @@ public class World implements IWorld {
         rootShapes.remove(shape);
         allShapes.remove(shape);
         // Remove shape from JavaFX rendering
-        B2J_JavaFX_Renderer.removeShape(shape);
+        JavaFXBridge.removeShape(shape);
         if (mouseManager != null) {
             mouseManager.removeShape(shape);
         }
@@ -304,8 +302,8 @@ public class World implements IWorld {
         if (!FX_AVAILABLE || scene == null) {
             return;
         }
-        javafx.scene.Cursor fxCursor = javafx.scene.Cursor.cursor(cursor);
-        scene.setCursor(fxCursor);
+        // Delegate to JavaFXBridge to avoid direct JavaFX import
+        JavaFXBridge.setCursor(scene, cursor);
     }
 
     /**

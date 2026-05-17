@@ -21,11 +21,12 @@ class MouseManager {
 
     /**
      * Erzeugt einen Maus-Manager für die angegebene `World` und `Scene`.
+     * Accepts Object to avoid direct JavaFX import in callers.
      */
-    public MouseManager(World world, Scene scene) {
+    public MouseManager(World world, Object sceneObj) {
         this.world = world;
-        if (FX_AVAILABLE && scene != null) {
-            registerListeners(scene);
+        if (FX_AVAILABLE && sceneObj != null) {
+            registerListeners((Scene) sceneObj);
         }
     }
 

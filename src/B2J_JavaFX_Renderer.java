@@ -1,12 +1,19 @@
+// AUTO-GENERATED FIX: B2J_JavaFX_Renderer.java - Robust Turtle node handling & clean structure
 import java.awt.GraphicsEnvironment;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.image.PixelReader;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 /**
  * Übernimmt das JavaFX-Rendering für B2J-Grafiken.
@@ -79,7 +86,7 @@ class B2J_JavaFX_Renderer {
     public static void createWindow(World world, double width, double height) {
         createWindow(world, "World", width, height, Color.BLACK);
     }  
-    
+        
     /**
      * Create a JavaFX window for a new World with default dimensions
      */
@@ -278,7 +285,7 @@ class B2J_JavaFX_Renderer {
     }
 
     private static javafx.scene.Node createNodeForSprite(Sprite shape) {
-        javafx.scene.image.Image image = shape.getImage();
+        Image image = getImageFromSprite(shape);
         if (image == null) {
             javafx.scene.shape.Rectangle rect = new javafx.scene.shape.Rectangle();
             Shape.Bounds bounds = shape.getBounds();
@@ -300,10 +307,13 @@ class B2J_JavaFX_Renderer {
 
     private static javafx.scene.Node createNodeForTurtle(Turtle shape) {
         javafx.scene.Group group = new javafx.scene.Group();
-        group.getChildren().add(shape.createLineNode());
-        javafx.scene.shape.Polygon turtleNode = shape.createTurtleNode();
-        if (turtleNode != null) {
-            group.getChildren().add(turtleNode);
+        Object lineObj = shape.createLineNode();
+        if (lineObj instanceof javafx.scene.Node) {
+            group.getChildren().add((javafx.scene.Node) lineObj);
+        }
+        Object turtleObj = shape.createTurtleNode();
+        if (turtleObj instanceof javafx.scene.Node) {
+            group.getChildren().add((javafx.scene.Node) turtleObj);
         }
         return group;
     }
@@ -370,5 +380,166 @@ class B2J_JavaFX_Renderer {
                 window.stage.close();
             }
         });
+    }
+
+    // ========================
+    // Sprite Animation Methods
+    // ========================
+
+    private static final Map<Sprite, Timeline> spriteTimelines = new HashMap<>();
+
+    /**
+     * Start a sprite animation.
+     */
+    public static Timeline startSpriteAnimation(Sprite shape, int imagesPerSecond, List<Integer> sequence, RepeatType repeatType) {
+        if (!FX_AVAILABLE) {
+            return null;
+        }
+        stopSpriteAnimation(shape);
+        if (imagesPerSecond <= 0) {
+            imagesPerSecond = 1;
+        }
+        Duration frameDuration = Duration.millis(1000.0 / imagesPerSecond);
+        Timeline timeline = new Timeline();
+        for (int i = 0; i < sequence.size(); i++) {
+            int index = sequence.get(i);
+            final int idx = index;
+            timeline.getKeyFrames().add(new KeyFrame(frameDuration.multiply(i), event -> {
+                shape.setImageIndex(idx);
+                updateShape(shape);
+            }));
+        }
+        if (repeatType == null) {
+            repeatType = RepeatType.once;
+        }
+        timeline.setCycleCount(repeatType == RepeatType.loop || repeatType == RepeatType.backAndForth
+            ? Timeline.INDEFINITE
+            : 1);
+        timeline.play();
+        spriteTimelines.put(shape, timeline);
+        return timeline;
+    }
+
+    /**
+     * Stop a sprite animation.
+     */
+    public static void stopSpriteAnimation(Sprite shape) {
+        if (!FX_AVAILABLE) {
+            return;
+        }
+        Timeline timeline = spriteTimelines.remove(shape);
+        if (timeline != null) {
+            timeline.stop();
+        }
+    }
+
+    /**
+     * Pause a sprite animation.
+     */
+    public static void pauseSpriteAnimation(Sprite shape) {
+        if (!FX_AVAILABLE) {
+            return;
+        }
+        Timeline timeline = spriteTimelines.get(shape);
+        if (timeline != null) {
+            timeline.pause();
+        }
+    }
+
+    /**
+     * Resume a sprite animation.
+     */
+    public static void resumeSpriteAnimation(Sprite shape) {
+        if (!FX_AVAILABLE) {
+            return;
+        }
+        Timeline timeline = spriteTimelines.get(shape);
+        if (timeline != null) {
+            timeline.play();
+        }
+    }
+
+    /**
+     * Get pixel color from a sprite image.
+     */
+    public static int getSpritePixelColor(Sprite shape, int x, int y) {
+        if (!FX_AVAILABLE) {
+            return 0;
+        }
+        Image image = getImageFromSprite(shape);
+        if (image == null) {
+            return 0;
+        }
+        try {
+            PixelReader reader = image.getPixelReader();
+            if (reader == null) {
+                return 0;
+            }
+            int ix = clampPixel(x, image.getWidth());
+            int iy = clampPixel(y, image.getHeight());
+            return reader.getArgb(ix, iy) & 0x00ffffff;
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    /**
+     * Get pixel alpha from a sprite image.
+     */
+    public static double getSpritePixelAlpha(Sprite shape, int x, int y) {
+        if (!FX_AVAILABLE) {
+            return 0.0;
+        }
+        Image image = getImageFromSprite(shape);
+        if (image == null) {
+            return 0.0;
+        }
+        try {
+            PixelReader reader = image.getPixelReader();
+            if (reader == null) {
+                return 0.0;
+            }
+            int ix = clampPixel(x, image.getWidth());
+            int iy = clampPixel(y, image.getHeight());
+            int argb = reader.getArgb(ix, iy);
+            int alpha = (argb >> 24) & 0xff;
+            return alpha / 255.0;
+        } catch (Exception e) {
+            return 0.0;
+        }
+    }
+
+    /**
+     * Load a sprite image from resources.
+     */
+    public static Image loadSpriteImage(SpriteLibrary lib, int index) {
+        if (!FX_AVAILABLE) {
+            return null;
+        }
+        try {
+            String resourcePath = String.format("/sprites/%s/%d.png", lib.getName(), index);
+            java.io.InputStream is = Sprite.class.getResourceAsStream(resourcePath);
+            if (is != null) {
+                return new Image(is);
+            }
+        } catch (Exception e) {
+            // ignore
+        }
+        return null;
+    }
+
+    private static Image getImageFromSprite(Sprite shape) {
+        Object imgObj = shape.getImage();
+        if (imgObj instanceof Image) {
+            return (Image) imgObj;
+        }
+        return null;
+    }
+
+    private static int clampPixel(int value, double max) {
+        if (max <= 0) {
+            return 0;
+        }
+        return Math.max(0, Math.min((int) max - 1, value));
     }
 }
