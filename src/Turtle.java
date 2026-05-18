@@ -1,21 +1,21 @@
+// AUTO-GENERATED FIX: Turtle.java rewrite to resolve corruption
+import java.awt.GraphicsEnvironment;
 import java.util.ArrayList;
 import java.util.List;
-
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Polygon;
 
 /**
  * Turtle-Grafik-Helfer, der beim Bewegen zeichnet.
  */
-public class Turtle extends FilledShape {
+class Turtle extends FilledShape {
+
+    private static final boolean FX_AVAILABLE = !GraphicsEnvironment.isHeadless();
     private static final double DEFAULT_TURTLE_SIZE = 20.0;
 
-    private final List<LineSegment> segments = new ArrayList<>();
-    private boolean penIsDown = true;
-    private boolean showTurtle = true;
+    final List<LineSegment> segments = new ArrayList<>();
+    boolean showTurtle = true;
+    boolean penIsDown = true;
     private double turtleAngleDeg = 0.0;
-    private double turtleSize = DEFAULT_TURTLE_SIZE;
+    double turtleSize = DEFAULT_TURTLE_SIZE;
 
     public Turtle() {
         this(100, 200, true);
@@ -43,16 +43,16 @@ public class Turtle extends FilledShape {
         }
         centerX = newX;
         centerY = newY;
-        if (world != null) {
-            B2J_JavaFX_Renderer.updateShape(this);
+        if (FX_AVAILABLE && world != null) {
+            JavaFXBridge.updateShape(this);
         }
         return this;
     }
 
     public void turn(double angleInDeg) {
         turtleAngleDeg = normalizeAngle(turtleAngleDeg + angleInDeg);
-        if (world != null) {
-            B2J_JavaFX_Renderer.updateShape(this);
+        if (FX_AVAILABLE && world != null) {
+            JavaFXBridge.updateShape(this);
         }
     }
 
@@ -72,15 +72,15 @@ public class Turtle extends FilledShape {
         LineSegment last = segments.get(segments.size() - 1);
         segments.add(new LineSegment(last.x2, last.y2, first.x1, first.y1,
             borderColor == null ? null : borderColor.toInt(), borderAlpha, borderWidth));
-        if (world != null) {
-            B2J_JavaFX_Renderer.updateShape(this);
+        if (FX_AVAILABLE && world != null) {
+            JavaFXBridge.updateShape(this);
         }
     }
 
     public void showTurtle(boolean show) {
         this.showTurtle = show;
-        if (world != null) {
-            B2J_JavaFX_Renderer.updateShape(this);
+        if (FX_AVAILABLE && world != null) {
+            JavaFXBridge.updateShape(this);
         }
     }
 
@@ -88,8 +88,8 @@ public class Turtle extends FilledShape {
         segments.clear();
         segments.add(new LineSegment(centerX, centerY, centerX, centerY,
             borderColor == null ? null : borderColor.toInt(), borderAlpha, borderWidth));
-        if (world != null) {
-            B2J_JavaFX_Renderer.updateShape(this);
+        if (FX_AVAILABLE && world != null) {
+            JavaFXBridge.updateShape(this);
         }
     }
 
@@ -105,12 +105,28 @@ public class Turtle extends FilledShape {
         return turtleAngleDeg;
     }
 
+    public double getTurtleAngleDeg() {
+        return turtleAngleDeg;
+    }
+
+    public double getTurtleSize() {
+        return turtleSize;
+    }
+
+    public boolean isShowTurtle() {
+        return showTurtle;
+    }
+
+    public List<LineSegment> getSegments() {
+        return segments;
+    }
+
     @Override
     public Turtle moveTo(double x, double y) {
         centerX = x;
         centerY = y;
-        if (world != null) {
-            B2J_JavaFX_Renderer.updateShape(this);
+        if (FX_AVAILABLE && world != null) {
+            JavaFXBridge.updateShape(this);
         }
         return this;
     }
@@ -128,45 +144,18 @@ public class Turtle extends FilledShape {
         return copy;
     }
 
-    public javafx.scene.Group createLineNode() {
-        javafx.scene.Group group = new javafx.scene.Group();
-        for (LineSegment segment : segments) {
-            Line line = new Line(segment.x1, segment.y1, segment.x2, segment.y2);
-            if (segment.color != null) {
-                Color base = toFxColor(segment.color, segment.alpha);
-                line.setStroke(base);
-            }
-            line.setStrokeWidth(segment.width);
-            group.getChildren().add(line);
-        }
-        return group;
-    }
-
-    public Polygon createTurtleNode() {
-        if (!showTurtle) {
+    public Object createLineNode() {
+        if (!FX_AVAILABLE) {
             return null;
         }
-        double size = turtleSize;
-        double rad = Math.toRadians(turtleAngleDeg);
-        double cos = Math.cos(rad);
-        double sin = Math.sin(rad);
-
-        double x1 = centerX + cos * size;
-        double y1 = centerY - sin * size;
-        double x2 = centerX + Math.cos(rad + Math.toRadians(140)) * size * 0.6;
-        double y2 = centerY - Math.sin(rad + Math.toRadians(140)) * size * 0.6;
-        double x3 = centerX + Math.cos(rad - Math.toRadians(140)) * size * 0.6;
-        double y3 = centerY - Math.sin(rad - Math.toRadians(140)) * size * 0.6;
-
-        Polygon turtle = new Polygon();
-        turtle.getPoints().addAll(x1, y1, x2, y2, x3, y3);
-        turtle.setFill(Color.GREEN);
-        return turtle;
+        return JavaFXBridge.createTurtleLineNode(this);
     }
 
-    private Color toFxColor(int rgb, double alpha) {
-        Color base = Color.rgb((rgb >> 16) & 0xff, (rgb >> 8) & 0xff, rgb & 0xff, alpha);
-        return base;
+    public Object createTurtleNode() {
+        if (!FX_AVAILABLE || !showTurtle) {
+            return null;
+        }
+        return JavaFXBridge.createTurtlePolygonNode(this);
     }
 
     @Override
@@ -187,7 +176,7 @@ public class Turtle extends FilledShape {
         return new Bounds(minX, minY, maxX, maxY);
     }
 
-    private static class LineSegment {
+    static class LineSegment {
         final double x1;
         final double y1;
         final double x2;
