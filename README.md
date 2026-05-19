@@ -422,4 +422,4 @@ Text --> Alignment
 JavaKaraWorld --> DirectionDelta
 ```
 This diagram focuses on the public API that consumers are expected to use. Internal renderer helpers, package-private methods, and other implementation details are intentionally omitted.
-```
+
